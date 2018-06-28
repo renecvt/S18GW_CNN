@@ -4,15 +4,14 @@ import pycbc.frame
 from pycbc.frame import losc
 from os import listdir
 
-def read_files():
+
+def read_files(files, path=""):
     h1_ts = []
     l1_ts = []
 
-    mypath = '%s/data_24hrs/' % os.getcwd()
-    files = listdir(mypath)
-
     for f in files:
-        location = mypath + f
+        print 'Reading %s' % f
+        location = path + f
         channel = '%s1:LOSC-STRAIN' % f[0]
         ts = pycbc.frame.read_frame(location, channel)
         if f[0] == 'H':
@@ -22,3 +21,13 @@ def read_files():
 
     return h1_ts, l1_ts
 
+
+###### Examples #####
+# Multiple files
+mypath = '%s/data_24hrs/' % os.getcwd()
+files = listdir(mypath)
+read_files(files, mypath)
+
+# 1 file
+_, l1_ts = read_files(['L-L1_LOSC_4_V1-1126068224-4096.gwf'])
+print l1_ts
