@@ -24,10 +24,10 @@ def read_files(files, path=""):
 
 ###### Examples #####
 # Path for multiple files in a folder
-mypath = '%s/no_inj_data/' % os.getcwd()
-files = [f for f in listdir(mypath) if f.endswith(".gwf")]
+# mypath = '%s/no_inj_data/' % os.getcwd()
+# files = [f for f in listdir(mypath) if f.endswith(".gwf")]
 
-h1, l1 = read_files(files, mypath)
+# h1, l1 = read_files(files, mypath)
 
 # 1 file in current folder
 # _, l1 = read_files(['L-L1_LOSC_4_V1-1126068224-4096.gwf'])
