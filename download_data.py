@@ -4,21 +4,14 @@ import os
 from pycbc.frame import losc
 import Tools
 
-segs = Tools.SegmentList('H1_NO_CW_HW_INJ.txt')
-start = segs[0][0]
-end = segs[0][1]
-
-h1 = losc.losc_frame_json('H1', start, end)
-l1 = losc.losc_frame_json('L1', start, end)
-
-
 def get_file(url, fname):
-    if os.path.exists(fname):
+    fullfilename = os.path.join('%s/no_inj_data/' % os.getcwd(), fname)
+    if os.path.exists(fullfilename):
         print "%s exist" % fname
     else:
-        urllib.urlretrieve(url, fname)
+        print 'Saving to %s' % fullfilename
+        urllib.urlretrieve(url, fullfilename)
         print('Getting : {}'.format(url))
-
 
 def get_data(ifo):
     for s in ifo['strain']:
@@ -27,6 +20,12 @@ def get_data(ifo):
                 s['detector'][0], s['detector'], s['GPSstart'], s['duration'])
             get_file(s['url'], fileName)
 
+def read_segs(ifo, ifo_segs):
+    for s in ifo_segs:
+        start = s[0]
+        end = s[1]
+        frame = losc.losc_frame_json(ifo, start, end)
+        get_data(frame)
 
-get_data(l1)
-get_data(h1)
+read_segs('H1', Tools.SegmentList('SL/H1_NO_CBC_HW.txt'))
+read_segs('L1', Tools.SegmentList('SL/L1_NO_CBC_HW.txt'))
