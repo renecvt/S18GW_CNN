@@ -4,10 +4,10 @@ import pycbc.frame
 from pycbc.frame import losc
 from os import listdir
 
-h1_ts = []
-l1_ts = []
-
 def read_files():
+    h1_ts = []
+    l1_ts = []
+
     mypath = '%s/data_24hrs/' % os.getcwd()
     files = listdir(mypath)
 
@@ -20,4 +20,5 @@ def read_files():
         else:
             l1_ts.append(ts)
 
-read_files()
+    return h1_ts, l1_ts
+

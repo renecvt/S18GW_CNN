@@ -20,7 +20,7 @@ approximants = get_approximants('fd', 3)
 def template_generator(ts_list, masses, approximants, save):
     for approximant in approximants:
         for ts in ts_list:
-            if numpy.isnan(ts[0]) == False:
+            if not numpy.isnan(ts[0]):
                 psd = ts.psd(ts.duration)
                 psd = interpolate(psd, ts.delta_f)
                 psd = inverse_spectrum_truncation(psd, 4 * ts.sample_rate, low_frequency_cutoff = 15)
