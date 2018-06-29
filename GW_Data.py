@@ -1,3 +1,4 @@
+# coding=utf-8
 import pycbc
 import os
 import pycbc.frame
