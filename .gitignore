@@ -110,3 +110,4 @@ no_inj_data_gwf/
 .DS_Store
 *.DS_Store
 *.npy
+*.pyc

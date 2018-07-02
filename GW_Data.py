@@ -2,16 +2,31 @@
 import pycbc
 import os
 import pycbc.frame
+import numpy as np
 from pycbc.frame import losc, read_frame
 from os import listdir
 
-def read_files(files, path=""):
+def read_files():
+    mypath = '%s/no_inj_data_gwf/' % os.getcwd()
+    H_files = [f for f in listdir(mypath) if f.startswith('H')]
+    L_files = [f for f in listdir(mypath) if f.startswith('L')]
+
+    H_files_time = [f[15:-10] for f in listdir(mypath) if f.startswith('H')]
+    L_files_time = [f[15:-10] for f in listdir(mypath) if f.startswith('L')]
+
+    common_list = list(set(H_files_time).intersection(L_files_time))
+
+    H_files = [f for f in H_files if f[15:-10] in common_list]
+    L_files = [f for f in L_files if f[15:-10] in common_list]
+
+    files = H_files + L_files
+
     h1_ts = []
     l1_ts = []
 
     for f in files:
         print 'Reading %s' % f
-        location = path + f
+        location = mypath + f
         ## Default channel: H1:LOSC-STRAIN / L1:LOSC-STRAIN
         channel = '%s1:LOSC-STRAIN' % f[0]
         ts = read_frame(location, channel)
@@ -23,17 +38,15 @@ def read_files(files, path=""):
     return h1_ts, l1_ts
 
 
-###### Examples #####
-# Path for multiple files in a folder
-# mypath = '%s/no_inj_data/' % os.getcwd()
-# files = [f for f in listdir(mypath) if f.endswith(".gwf")]
+# h1, l1 = read_files()
 
-# h1, l1 = read_files(files, mypath)
+# print 'Paso 1 -- Terminado '
+# np.save('h1', h1)
+# print 'Paso 2 -- Terminado '
+# np.save('l1', l1)
+# print 'Paso 3 -- Terminado '
 
-# 1 file in current folder
-# _, l1 = read_files(['L-L1_LOSC_4_V1-1126068224-4096.gwf'])
-
-# Multiple files in current folder
-#files = [f for f in listdir('./') if f.endswith(".gwf")]
-# h1, l1 = read_files(files)
-
+# Read np files
+# from pycbc.types import TimeSeries
+# h1 = TimeSeries(np.load('h1.npy'))
+# l1 = TimeSeries(np.load('l1.npy'))
