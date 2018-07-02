@@ -14,7 +14,8 @@ files = [f for f in listdir(mypath) if f.endswith(".gwf")]
 h1, _ = read_files(files, mypath)
 
 # Array defining random masses
-masses = [20]
+# m1 > m2
+masses = [10, 20]
 
 # Getting the fd approximants
 # approximants = get_approximants('fd', 3)
@@ -23,12 +24,12 @@ approximant = 'SEOBNRv4_opt'
 def template_generator(ts_list, approximant, masses, save):
     for ts in ts_list:
        ts = resample_to_delta_t(highpass(ts, 15.0), 1.0/2048)
-       conditioned = ts.crop(2, 2) 
+       conditioned = ts.crop(2, 2)
        psd = conditioned.psd(4)
        psd = interpolate(psd, conditioned.delta_f)
        psd = inverse_spectrum_truncation(psd, 4 * conditioned.sample_rate, low_frequency_cutoff=15)
        for mass in masses:
-           plus_polarization, cross_polarization = get_td_waveform(approximant="SEOBNRv4_opt", mass1=mass, mass2=mass, delta_t=conditioned.delta_t, f_lower=20)
+           plus_polarization, _ = get_td_waveform(approximant="SEOBNRv4_opt", mass1=mass, mass2=mass, delta_t=1/4096, f_lower=20)
            plus_polarization.resize(len(conditioned))
            template = plus_polarization.cyclic_time_shift(plus_polarization.start_time)
            snr = matched_filter(template, conditioned, psd=psd, low_frequency_cutoff=20)

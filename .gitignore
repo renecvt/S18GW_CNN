@@ -108,3 +108,4 @@ data/
 *.hdf5
 .DS_Store
 *.DS_Store
+*.npy
