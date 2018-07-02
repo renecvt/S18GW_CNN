@@ -17,7 +17,8 @@ files = [f for f in listdir(mypath) if f.endswith(".gwf")]
 h1, _ = read_files(files, mypath)
 
 # Array defining random masses
-masses = [20]
+# m1 > m2
+masses = [10, 20]
 
 # Getting the fd approximants
 approximants = get_approximants('td', 10)
