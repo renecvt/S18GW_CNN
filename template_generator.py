@@ -1,16 +1,18 @@
 import os
 import numpy
-import Tools
+from Tools.Tools import getBiggerValue
 from pycbc.waveform import get_td_waveform
-from masses_generator import masses_generator
+from Tools.masses_generator import masses_generator
+from os.path import dirname, abspath
 
+DIRNAME = dirname(dirname(abspath(__file__)))
 DEFAULT_APPROXIMANT = 'SEOBNRv3_opt'
 MASSES = masses_generator()
 data = []
 
 def template_generator(approximant, masses):
     counter = 1
-    file_path = '%s/txts/dataset.txt' % os.getcwd()
+    file_path = '%s/Files/dataset.txt' % DIRNAME
     file = open(file_path, 'at')
     for mass in masses:
         info = {}
@@ -18,7 +20,7 @@ def template_generator(approximant, masses):
         plus_polarization.resize(4096)
         duration = plus_polarization.duration
         total_mass = mass[0] + mass[1]
-        index = Tools.getBiggerValue(list(plus_polarization))
+        index = getBiggerValue(list(plus_polarization))
         first_part = plus_polarization[:index]
         second_part = plus_polarization[index:]
         plus_polarization = " ".join(str(pl) for pl in plus_polarization)

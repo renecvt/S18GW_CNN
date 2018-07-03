@@ -6,12 +6,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import h5py
 import readligo as rl
-
 from pycbc.frame import losc
 from os import listdir
+from os.path import dirname, abspath
+
+DIRNAME = dirname(dirname(abspath(__file__)))
 
 def get_file(url, fname):
-    fullfilename = os.path.join('%s/no_inj_data_gwf/' % os.getcwd(), fname)
+    fullfilename = os.path.join('%s/Data/no_inj_data_gwf/' % DIRNAME, fname)
     if os.path.exists(fullfilename):
         print "%s exist" % fname
     else:
@@ -133,7 +135,7 @@ get_data(L_frame, hdf5=True)
 get_data(H_frame, hdf5=True)
 
 # Read hdf5 files, dquality and no injections
-mypath = '%s/no_inj_data/' % os.getcwd()
+mypath = '%s/Data/no_inj_data/' % DIRNAME
 L_files = [f for f in listdir(mypath) if f.endswith(".hdf5") and f.startswith('L')]
 H_files = [f for f in listdir(mypath) if f.endswith(".hdf5") and f.startswith('H')]
 
