@@ -1,10 +1,5 @@
 import os
-from os import listdir
-
 import numpy
-import pylab
-from pycbc.filter import highpass, matched_filter, resample_to_delta_t, sigma
-from pycbc.psd import interpolate, inverse_spectrum_truncation
 from pycbc.waveform import get_td_waveform
 
 default_approximant = 'SEOBNRv3_opt'
