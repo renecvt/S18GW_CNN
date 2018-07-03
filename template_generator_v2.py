@@ -1,13 +1,21 @@
+import os
+from os import listdir
 
-import pycbc
+import numpy
+import pylab
+from pycbc.filter import highpass, matched_filter, resample_to_delta_t, sigma
+from pycbc.psd import interpolate, inverse_spectrum_truncation
 from pycbc.waveform import get_td_waveform
-import numpy as np
+
+default_approximant = 'SEOBNRv3_opt'
+masses = [36]
+
+def template_generator(approximant, masses):
+    for mass in masses:
+        plus_polarization, _ = get_td_waveform(approximant=approximant, mass1=mass, mass2=mass - 5, delta_t=1.0 / 4096, f_lower=20)
+        save_path = '%s/txts/' % os.getcwd()
+        file_name = '{}_{}.txt'.format(approximant, mass)
+        numpy.savetxt('{}{}'.format(save_path, file_name), plus_polarization, newline=" ")
 
 
-
-plus_polarization, _ = get_td_waveform(approximant="SEOBNRv4_opt", mass1=36, mass2=29, delta_t=1/4096, f_lower=20)
-template = plus_polarization
-np.savetxt('template.txt', template)
-
-
-
+template_generator(approximant = default_approximant, masses = masses)
