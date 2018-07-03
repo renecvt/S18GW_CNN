@@ -7,7 +7,6 @@ from pycbc.waveform import get_td_waveform
 from Tools.masses_generator import masses_generator
 from os.path import dirname, abspath
 
-DIRNAME = dirname(dirname(abspath(__file__)))
 DEFAULT_APPROXIMANT = 'SEOBNRv3_opt'
 MASSES = masses_generator()
 data = []
