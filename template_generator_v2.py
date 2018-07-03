@@ -1,5 +1,6 @@
 import os
 import numpy
+import Tools
 from pycbc.waveform import get_td_waveform
 from masses_generator import masses_generator
 
@@ -17,17 +18,23 @@ def template_generator(approximant, masses):
         plus_polarization.resize(4096)
         duration = plus_polarization.duration
         total_mass = mass[0] + mass[1]
-        info['duration'] = duration
-        info['total_mass'] = total_mass
-        info['mass_one'] = mass[0]
-        info['mass_two'] = mass[1]
-        data.append(info)
-        plus_polarization = numpy.asarray(plus_polarization)
-        plus_polarization = plus_polarization.tolist()
+        index = Tools.getBiggerValue(list(plus_polarization))
+        first_part = plus_polarization[:index]
+        second_part = plus_polarization[index:]
         plus_polarization = " ".join(str(pl) for pl in plus_polarization)
         print('Writing line number %s' % counter)
         file.write("%r\n" % plus_polarization)
         counter += 1
+        info['duration'] = duration
+        info['total_mass'] = total_mass
+        info['mass_one'] = mass[0]
+        info['mass_two'] = mass[1]
+        info['duration1'] = first_part.duration
+        info['duration2'] = second_part.duration
+
+        data.append(info)
+
+
     file.close()
 
 

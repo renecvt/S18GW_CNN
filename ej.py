@@ -29,14 +29,4 @@ duration.resize(len(m_total))
 # plt.ylabel('Duration')
 # plt.show()
 
-import operator
-
-def getBiggerValue(list):
-    index, value = max(enumerate(list), key=operator.itemgetter(1))
-    index_min, value_min = min(enumerate(list), key=operator.itemgetter(1))
-
-    if abs(value_min) > value:
-        return index_min, value_min
-    else:
-        print index, value
 

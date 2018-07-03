@@ -1,4 +1,5 @@
 import numpy as np
+import operator
 
 class SegmentList():
     def __init__(self, filename, numcolumns=3):
@@ -28,3 +29,13 @@ class SegmentList():
         return iter(self.seglist)
     def __getitem__(self, key):
         return self.seglist[key]
+
+
+def getBiggerValue(list):
+    index, value = max(enumerate(list), key=operator.itemgetter(1))
+    index_min, value_min = min(enumerate(list), key=operator.itemgetter(1))
+
+    if abs(value_min) > value:
+        return index_min
+    else:
+        return index
