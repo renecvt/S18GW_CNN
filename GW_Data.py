@@ -39,14 +39,3 @@ def read_files():
 
 
 # h1, l1 = read_files()
-
-# print 'Paso 1 -- Terminado '
-# np.save('h1', h1)
-# print 'Paso 2 -- Terminado '
-# np.save('l1', l1)
-# print 'Paso 3 -- Terminado '
-
-# Read np files
-# from pycbc.types import TimeSeries
-# h1 = TimeSeries(np.load('h1.npy'))
-# l1 = TimeSeries(np.load('l1.npy'))
