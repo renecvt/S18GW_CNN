@@ -1,6 +1,8 @@
 import os
 import numpy
 from Tools.Tools import getBiggerValue
+import csv
+import Tools
 from pycbc.waveform import get_td_waveform
 from Tools.masses_generator import masses_generator
 from os.path import dirname, abspath
@@ -10,10 +12,30 @@ DEFAULT_APPROXIMANT = 'SEOBNRv3_opt'
 MASSES = masses_generator()
 data = []
 
+def create_folder(folder_name, file_name):
+    working_dir = os.getcwd()
+    complete_directory = '{}/{}/{}'.format(working_dir, folder_name, file_name)
+    folder_container = '{}/{}'.format(working_dir, folder_name)
+    if not os.path.exists(complete_directory):
+        if os.path.exists(folder_container):
+            new_file = open(complete_directory, 'w+')
+            new_file.close()
+        else:
+            os.makedirs(folder_container)
+            new_file = open(complete_directory, 'w+')
+            new_file.close()
+    else:
+        open(complete_directory, 'w').close()
+    return complete_directory
+
 def template_generator(approximant, masses):
     counter = 1
-    file_path = '%s/Files/dataset.txt' % DIRNAME
-    file = open(file_path, 'at')
+    directory = create_folder('Files', 'dataset.txt')
+    csv_directory = create_folder('Files', 'info.csv')
+    file = open(directory, 'at')
+    csv_file = open(csv_directory, 'w')
+    field_names = ['mass_one', 'mass_two', 'total_mass', 'duration', 'duration_one', 'duration_two']
+    csv_writer = csv.DictWriter(csv_file, fieldnames = field_names)
     for mass in masses:
         info = {}
         plus_polarization, _ = get_td_waveform(approximant = approximant, mass1 = mass[0], mass2 = mass[1], delta_t = 1.0 / 4096, f_lower = 20)
@@ -31,13 +53,12 @@ def template_generator(approximant, masses):
         info['total_mass'] = total_mass
         info['mass_one'] = mass[0]
         info['mass_two'] = mass[1]
-        info['duration1'] = first_part.duration
-        info['duration2'] = second_part.duration
-
+        info['duration_one'] = first_part.duration
+        info['duration_two'] = second_part.duration
+        csv_writer.writerow(info)
         data.append(info)
-
-
     file.close()
+    csv_file.close()
 
 
 template_generator(approximant = DEFAULT_APPROXIMANT, masses = MASSES)
