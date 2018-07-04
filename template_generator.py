@@ -4,6 +4,7 @@ from Tools.Tools import getBiggerValue
 import csv
 import Tools
 from pycbc.waveform import get_td_waveform
+import Tools.Plot as plt 
 from Tools.masses_generator import masses_generator
 from os.path import dirname, abspath
 
@@ -38,7 +39,6 @@ def template_generator(approximant, masses):
     for mass in masses:
         info = {}
         plus_polarization, _ = get_td_waveform(approximant = approximant, mass1 = mass[0], mass2 = mass[1], delta_t = 1.0 / 4096, f_lower = 20)
-        plus_polarization.resize(4096)
         duration = plus_polarization.duration
         total_mass = mass[0] + mass[1]
         index = getBiggerValue(list(plus_polarization))
@@ -61,3 +61,7 @@ def template_generator(approximant, masses):
 
 
 template_generator(approximant = DEFAULT_APPROXIMANT, masses = MASSES)
+plt.masses()
+plt.duration()
+plt.duration1()
+plt.duration2()
