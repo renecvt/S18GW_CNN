@@ -1,14 +1,16 @@
-import pycbc
-import urllib
 import os
-import Tools
-import numpy as np
-import matplotlib.pyplot as plt
-import h5py
-import readligo as rl
-from pycbc.frame import losc
+import urllib
 from os import listdir
-from os.path import dirname, abspath
+from os.path import abspath, dirname
+
+import h5py
+import matplotlib.pyplot as plt
+import numpy as np
+import pycbc
+from pycbc.frame import losc
+
+import readligo as rl
+import Tools
 
 DIRNAME = dirname(dirname(abspath(__file__)))
 
@@ -146,4 +148,3 @@ read_quality_inj(L_files, 'SL/L1_NO_INJ_DQ.txt', mypath)
 # Read segment list to download gwf
 read_segs('H1', Tools.SegmentList('SL/H1_NO_INJ_DQ.txt', numcolumns=2))
 read_segs('L1', Tools.SegmentList('SL/L1_NO_INJ_DQ.txt', numcolumns=2))
-

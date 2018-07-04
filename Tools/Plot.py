@@ -1,8 +1,10 @@
-import pylab as plt
+from os.path import abspath, dirname
+
 import numpy as np
-from masses_generator import masses_generator
+import pylab as plt
 from numpy import genfromtxt
-from os.path import dirname, abspath
+
+from masses_generator import masses_generator
 
 DIRNAME = dirname(dirname(abspath(__file__)))
 DATA = genfromtxt('%s/Files/info.csv' % DIRNAME, delimiter=',')
