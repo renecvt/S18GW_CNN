@@ -1,10 +1,12 @@
 # coding=utf-8
-import pycbc
 import os
-import pycbc.frame
-import numpy as np
-from pycbc.frame import losc, read_frame
 from os import listdir
+
+import numpy as np
+import pycbc
+import pycbc.frame
+from pycbc.frame import losc, read_frame
+
 
 def read_files():
     mypath = '%s/no_inj_data_gwf/' % os.getcwd()
@@ -27,7 +29,7 @@ def read_files():
     for f in files:
         print 'Reading %s' % f
         location = mypath + f
-        ## Default channel: H1:LOSC-STRAIN / L1:LOSC-STRAIN
+        # Default channel: H1:LOSC-STRAIN / L1:LOSC-STRAIN
         channel = '%s1:LOSC-STRAIN' % f[0]
         ts = read_frame(location, channel)
         if f[0] == 'H':
