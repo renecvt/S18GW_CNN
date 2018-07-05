@@ -50,10 +50,14 @@ def template_generator(approximant, masses):
         lowest_moved_axis_plus_polarization = move_ts_axis(ts = resized_plus_polarization, time_crop = LOWEST_TIME_CROP, duration = TSEGMENT)
         normal_moved_axis_plus_polarization = move_ts_axis(ts = resized_plus_polarization, time_crop = NORMAL_TIME_CROP, duration = TSEGMENT)
         highest_moved_axis_plus_polarization = move_ts_axis(ts = resized_plus_polarization, time_crop = HIGHEST_TIME_CROP, duration = TSEGMENT)
-        file.write("%r\n" % list(resized_plus_polarization))
-        file.write("%r\n" % list(lowest_moved_axis_plus_polarization))
-        file.write("%r\n" % list(normal_moved_axis_plus_polarization))
-        file.write("%r\n" % list(highest_moved_axis_plus_polarization))
+        resized_plus_polarization = " ".join(str(pl) for pl in resized_plus_polarization)
+        lowest_moved_axis_plus_polarization = " ".join(str(pl) for pl in lowest_moved_axis_plus_polarization)
+        normal_moved_axis_plus_polarization = " ".join(str(pl) for pl in normal_moved_axis_plus_polarization)
+        highest_moved_axis_plus_polarization = " ".join(str(pl) for pl in highest_moved_axis_plus_polarization)
+        file.write("%r\n" % resized_plus_polarization)
+        file.write("%r\n" % lowest_moved_axis_plus_polarization)
+        file.write("%r\n" % normal_moved_axis_plus_polarization)
+        file.write("%r\n" % highest_moved_axis_plus_polarization)
         counter += 1    
     file.close()
 
