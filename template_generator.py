@@ -41,6 +41,8 @@ def create_folder(folder_name, file_name):
 
 def template_generator(approximant, masses):
     counter = 1
+    directory = create_folder('Files', 'dataset.csv')
+    file = open(directory, 'at')
     for mass in masses:
         plus_polarization, _ = get_td_waveform(approximant = approximant, mass1 = mass[0], mass2 = mass[1], delta_t = DELTA_T, f_lower = F_LOWER)
         cut_plus_polarization = cut_zero_values(ts = plus_polarization)
@@ -48,7 +50,12 @@ def template_generator(approximant, masses):
         lowest_moved_axis_plus_polarization = move_ts_axis(ts = resized_plus_polarization, time_crop = LOWEST_TIME_CROP, duration = TSEGMENT)
         normal_moved_axis_plus_polarization = move_ts_axis(ts = resized_plus_polarization, time_crop = NORMAL_TIME_CROP, duration = TSEGMENT)
         highest_moved_axis_plus_polarization = move_ts_axis(ts = resized_plus_polarization, time_crop = HIGHEST_TIME_CROP, duration = TSEGMENT)
-        counter += 1
+        file.write("%r\n" % list(resized_plus_polarization))
+        file.write("%r\n" % list(lowest_moved_axis_plus_polarization))
+        file.write("%r\n" % list(normal_moved_axis_plus_polarization))
+        file.write("%r\n" % list(highest_moved_axis_plus_polarization))
+        counter += 1    
+    file.close()
 
 
 template_generator(approximant = DEFAULT_APPROXIMANT, masses = MASSES)
