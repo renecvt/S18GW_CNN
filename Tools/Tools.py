@@ -48,21 +48,20 @@ def getBiggerValue(list):
         return index
 
 def cutZeroValues(ts):
-    lista=list(ts)
-    counter=0
-    last_element=len(lista)-1
+    lista = list(ts)
+    counter = 0
+    last_element = len(lista) - 1
     for index,l in enumerate(lista):
-        if l ==0:
-            counter+=1
+        if l == 0:
+            counter += 1
         else:
-            counter=0
-        if counter>=2:
-            return TimeSeries(lista[:index-1], delta_t = 1.0/4096) 
-        elif index==last_element:
+            counter = 0
+        if counter >= 2:
+            return TimeSeries(lista[:index-1], delta_t = 1.0 / 4096) 
+        elif index == last_element:
             return ts
         
-#def resize_template(ts,time):
- #   ts= ts.
+
 
         
 
