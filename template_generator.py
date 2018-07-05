@@ -9,10 +9,16 @@ from pycbc.waveform import get_td_waveform
 import Tools
 
 from Tools.masses_generator import masses_generator
-from Tools.Tools import getBiggerValue
+from Tools.Tools import get_bigger_value, cut_zero_values, resize_ts, move_ts_axis
 
 DEFAULT_APPROXIMANT = 'SEOBNRv3_opt'
 MASSES = masses_generator()
+TSEGMENT = 1
+DELTA_T = 1.0 / 4096
+F_LOWER = 20
+LOWEST_TIME_CROP = .200
+NORMAL_TIME_CROP = .400
+HIGHEST_TIME_CROP = .600
 data = []
 
 
@@ -35,41 +41,25 @@ def create_folder(folder_name, file_name):
 
 def template_generator(approximant, masses):
     counter = 1
-    directory = create_folder('Files', 'dataset.txt')
-    csv_directory = create_folder('Files', 'info.csv')
+    directory = create_folder('Files', 'dataset.csv')
     file = open(directory, 'at')
-    csv_file = open(csv_directory, 'w')
-    field_names = ['mass_one', 'mass_two', 'total_mass',
-                   'duration', 'duration_one', 'duration_two']
-    csv_writer = csv.DictWriter(csv_file, fieldnames=field_names)
     for mass in masses:
-        info = {}
-        plus_polarization, _ = get_td_waveform(
-            approximant=approximant, mass1=mass[0], mass2=mass[1], delta_t=1.0 / 4096, f_lower=20)
-        duration = plus_polarization.duration
-        total_mass = mass[0] + mass[1]
-        index = getBiggerValue(list(plus_polarization))
-        first_part = plus_polarization[:index]
-        second_part = plus_polarization[index:]
-
-        # pylab.plot(plus_polarization.sample_times,plus_polarization,  label= '')
-        # pylab.savefig('%s_%s_masses.png' % (mass[0], mass[1]))
-        # pylab.show()
-
-        plus_polarization = " ".join(str(pl) for pl in plus_polarization)
-        print('Writing line number %s' % counter)
-        file.write("%r\n" % plus_polarization)
-        counter += 1
-        info['duration'] = duration
-        info['total_mass'] = total_mass
-        info['mass_one'] = mass[0]
-        info['mass_two'] = mass[1]
-        info['duration_one'] = first_part.duration
-        info['duration_two'] = second_part.duration
-        csv_writer.writerow(info)
-        data.append(info)
+        plus_polarization, _ = get_td_waveform(approximant = approximant, mass1 = mass[0], mass2 = mass[1], delta_t = DELTA_T, f_lower = F_LOWER)
+        cut_plus_polarization = cut_zero_values(ts = plus_polarization)
+        resized_plus_polarization = resize_ts(ts = cut_plus_polarization, time = TSEGMENT)
+        lowest_moved_axis_plus_polarization = move_ts_axis(ts = resized_plus_polarization, time_crop = LOWEST_TIME_CROP, duration = TSEGMENT)
+        normal_moved_axis_plus_polarization = move_ts_axis(ts = resized_plus_polarization, time_crop = NORMAL_TIME_CROP, duration = TSEGMENT)
+        highest_moved_axis_plus_polarization = move_ts_axis(ts = resized_plus_polarization, time_crop = HIGHEST_TIME_CROP, duration = TSEGMENT)
+        resized_plus_polarization = " ".join(str(pl) for pl in resized_plus_polarization)
+        lowest_moved_axis_plus_polarization = " ".join(str(pl) for pl in lowest_moved_axis_plus_polarization)
+        normal_moved_axis_plus_polarization = " ".join(str(pl) for pl in normal_moved_axis_plus_polarization)
+        highest_moved_axis_plus_polarization = " ".join(str(pl) for pl in highest_moved_axis_plus_polarization)
+        file.write("%r\n" % resized_plus_polarization)
+        file.write("%r\n" % lowest_moved_axis_plus_polarization)
+        file.write("%r\n" % normal_moved_axis_plus_polarization)
+        file.write("%r\n" % highest_moved_axis_plus_polarization)
+        counter += 1    
     file.close()
-    csv_file.close()
 
 
-template_generator(approximant=DEFAULT_APPROXIMANT, masses=MASSES)
+template_generator(approximant = DEFAULT_APPROXIMANT, masses = MASSES)
