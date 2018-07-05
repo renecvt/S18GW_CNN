@@ -60,7 +60,20 @@ def cutZeroValues(ts):
             return TimeSeries(lista[:index-1], delta_t = 1.0 / 4096) 
         elif index == last_element:
             return ts
-        
+def resizeTs(ts,time):
+    duration=ts.duration
+    if duration == 1.0:
+        return ts
+    elif duration > 1.0:
+        duration = duration - 1
+        ts = ts.crop(left = duration, right = 0)
+        return ts
+    else:
+        while ts.duration < 1.0:
+            ts.prepend_zeros(1)
+        return ts
+
+
 
 
         
