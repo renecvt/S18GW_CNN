@@ -40,7 +40,7 @@ def template_generator(approximant, masses):
     #csv_writer = csv.DictWriter(csv_file, fieldnames=field_names)
     for mass in masses:
         plus_polarization, _ = get_td_waveform(approximant = approximant, mass1 = mass[0], mass2 = mass[1], delta_t = 1.0 / 4096, f_lower = 20)
-        plus_polarization = cutZeroValues(list(plus_polarization))
+        plus_polarization = cutZeroValues(plus_polarization)
         #pylab.plot(plus_polarization)
         #pylab.show()
         # pylab.plot(plus_polarization.sample_times,plus_polarization,  label= '')

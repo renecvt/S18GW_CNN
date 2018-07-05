@@ -1,7 +1,6 @@
 import operator
-
 import numpy as np
-
+from pycbc.types import TimeSeries
 
 class SegmentList():
     def __init__(self, filename, numcolumns=3):
@@ -48,20 +47,21 @@ def getBiggerValue(list):
     else:
         return index
 
-def cutZeroValues(list):
+def cutZeroValues(ts):
+    lista = list(ts)
     counter = 0
-    last_element = len(list)-1
-    for index,l in enumerate(list):
+    last_element = len(lista) - 1
+    for index,l in enumerate(lista):
         if l == 0:
             counter += 1
         else:
             counter = 0
         if counter >= 2:
-            return list[:index-1]
+            return TimeSeries(lista[:index-1], delta_t = 1.0 / 4096) 
         elif index == last_element:
-            return list
+            return ts
         
-        
+
 
         
 
