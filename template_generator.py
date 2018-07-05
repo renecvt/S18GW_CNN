@@ -9,10 +9,11 @@ from pycbc.waveform import get_td_waveform
 import Tools
 
 from Tools.masses_generator import masses_generator
-from Tools.Tools import getBiggerValue, cutZeroValues
+from Tools.Tools import getBiggerValue, cutZeroValues, resizeTs
 
 DEFAULT_APPROXIMANT = 'SEOBNRv3_opt'
 MASSES = masses_generator()
+TSEGMENT=1
 data = []
 
 
@@ -41,8 +42,12 @@ def template_generator(approximant, masses):
     for mass in masses:
         plus_polarization, _ = get_td_waveform(approximant = approximant, mass1 = mass[0], mass2 = mass[1], delta_t = 1.0 / 4096, f_lower = 20)
         plus_polarization = cutZeroValues(plus_polarization)
-        #pylab.plot(plus_polarization)
-        #pylab.show()
+        pylab.plot(plus_polarization)
+        pylab.show()
+        plus_polarization=resizeTs(plus_polarization,TSEGMENT)
+        print(plus_polarization.duration)
+        pylab.plot(plus_polarization)
+        pylab.show()
         # pylab.plot(plus_polarization.sample_times,plus_polarization,  label= '')
         # pylab.savefig('%s_%s_masses.png' % (mass[0], mass[1]))
         # pylab.show()
