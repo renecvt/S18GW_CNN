@@ -38,7 +38,7 @@ class SegmentList():
         return self.seglist[key]
 
 
-def getBiggerValue(list):
+def get_bigger_value(list):
     index, value = max(enumerate(list), key=operator.itemgetter(1))
     index_min, value_min = min(enumerate(list), key=operator.itemgetter(1))
 
@@ -47,7 +47,7 @@ def getBiggerValue(list):
     else:
         return index
 
-def cutZeroValues(ts):
+def cut_zero_values(ts):
     lista = list(ts)
     counter = 0
     last_element = len(lista) - 1
@@ -60,18 +60,25 @@ def cutZeroValues(ts):
             return TimeSeries(lista[:index-1], delta_t = 1.0 / 4096) 
         elif index == last_element:
             return ts
-def resizeTs(ts,time):
-    duration=ts.duration
-    if duration == 1.0:
+
+def resize_ts(ts, time):
+    duration = ts.duration
+    if duration == time:
         return ts
-    elif duration > 1.0:
+    elif duration > time:
         duration = duration - 1
         ts = ts.crop(left = duration, right = 0)
         return ts
     else:
-        while ts.duration < 1.0:
+        while ts.duration < time:
             ts.prepend_zeros(1)
         return ts
+
+def move_ts_axis(ts, time_crop, duration):
+    ts = ts.crop(left = time_crop, right = 0)
+    while ts.duration < duration:
+        ts.append_zeros(1)
+    return ts
 
 
 
