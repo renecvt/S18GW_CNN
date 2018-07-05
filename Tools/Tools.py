@@ -49,16 +49,16 @@ def getBiggerValue(list):
         return index
 
 def cutZeroValues(list):
-    counter=0
-    last_element=len(list)-1
+    counter = 0
+    last_element = len(list)-1
     for index,l in enumerate(list):
-        if l ==0:
-            counter+=1
+        if l == 0:
+            counter += 1
         else:
-            counter=0
-        if counter>=2:
+            counter = 0
+        if counter >= 2:
             return list[:index-1]
-        elif index==last_element:
+        elif index == last_element:
             return list
         
         
