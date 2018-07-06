@@ -111,3 +111,5 @@ no_inj_data_gwf/
 *.DS_Store
 *.npy
 *.pyc
+S18GW_CNN/
+.vscode/
