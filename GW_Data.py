@@ -9,7 +9,7 @@ from pycbc.frame import losc, read_frame
 
 
 def read_files():
-    mypath = '%s/no_inj_data_gwf/' % os.getcwd()
+    mypath = '%s/Data/no_inj_data_gwf/' % os.getcwd()
     H_files = [f for f in listdir(mypath) if f.startswith('H')]
     L_files = [f for f in listdir(mypath) if f.startswith('L')]
 
