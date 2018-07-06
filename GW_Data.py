@@ -26,16 +26,28 @@ def read_files():
     h1_ts = []
     l1_ts = []
 
+    files = ['L-L1_LOSC_4_V1-1126072320-4096.gwf', 'H-H1_LOSC_4_V1-1126072320-4096.gwf']
+
     for f in files:
+        if len(h1_ts) > 0 and f[0] == 'H':
+            continue
+
+        if len(h1_ts) == 1 and len(l1_ts) == 1:
+            return h1_ts, l1_ts
+
         print 'Reading %s' % f
         location = mypath + f
+
         # Default channel: H1:LOSC-STRAIN / L1:LOSC-STRAIN
         channel = '%s1:LOSC-STRAIN' % f[0]
         ts = read_frame(location, channel)
+
         if f[0] == 'H':
             h1_ts.append(ts)
         else:
             l1_ts.append(ts)
+
+
 
     return h1_ts, l1_ts
 

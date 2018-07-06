@@ -80,45 +80,41 @@ from numpy import genfromtxt
 from pycbc.filter import matched_filter
 
 
-def noise_template_generator(approximant, masses):
+def noise_template_generator():
     DIRNAME = dirname(dirname(abspath(__file__)))
     h1, l1 = GW_Data.read_files()
     for i in range(len(h1)):
         h1_strain = h1[i]
         l1_strain = l1[i]
-        h1_strain = resample_to_delta_t(highpass(h1_strain, 15.0), 1.0/4096)
-        l1_strain = resample_to_delta_t(highpass(l1_strain, 15.0), 1.0/4096)
         templates = genfromtxt('%s/S18GW_CNN/Files/dataset.csv' % DIRNAME, delimiter=' ')
         for template in templates:
-            t = list(template)
-            t = TimeSeries(t, DELTA_T)
-            print len(h1_strain)
-            print len(t)
-            t.resize(len(h1_strain))
-            print len(t)
 
-            h1_psd = h1_strain.psd(1)
-            l1_psd = l1_strain.psd(1)
-            h1_psd = interpolate(h1_psd, h1_strain.delta_f)
-            l1_psd = interpolate(l1_psd, l1_strain.delta_f)
-            h1_psd = inverse_spectrum_truncation(h1_psd, 1 * h1_strain.sample_rate,
-                                                 low_frequency_cutoff=15)
-            l1_psd = inverse_spectrum_truncation(l1_psd, 1 * l1_strain.sample_rate,
-                                                 low_frequency_cutoff=15)
-            h1_snr = matched_filter(t, h1_strain,
-                                    psd=h1_psd, low_frequency_cutoff=20)
-            l1_snr = matched_filter(t, l1_strain,
-                                    psd=l1_psd, low_frequency_cutoff=20)
-            pylab.figure(figsize=[10, 4])
-            pylab.plot(h1_snr.sample_times, abs(h1_snr))
+            h1_strain = h1_strain.time_slice(h1_strain.start_time, h1_strain.start_time + 1)
+            l1_strain = l1_strain.time_slice(l1_strain.start_time, l1_strain.start_time + 1)
+
+            print(h1_strain.start_time)
+            print(l1_strain.start_time)
+
+            print(h1_strain._epoch)
+            print(l1_strain._epoch)
+
+            t = list(template)
+            t = TimeSeries(t, DELTA_T, epoch=h1_strain._epoch)
+            t = t/10
+
+            h1 = h1_strain + t
+            l1 = l1_strain + t
+
+            pylab.subplot(2, 1, 1)
+            pylab.plot(h1.sample_times, h1)
             pylab.ylabel('Signal-to-noise H1')
             pylab.xlabel('Time (s)')
-            pylab.show()
 
-            pylab.figure(figsize=[10, 4])
-            pylab.plot(l1_snr.sample_times, abs(l1_snr))
+            pylab.subplot(2, 1, 2)
+            pylab.plot(l1.sample_times, l1)
             pylab.ylabel('Signal-to-noise L1')
             pylab.xlabel('Time (s)')
+
             pylab.show()
 
             pylab.close()
@@ -126,4 +122,4 @@ def noise_template_generator(approximant, masses):
 
 
 # template_generator(approximant = DEFAULT_APPROXIMANT, masses = MASSES)
-noise_template_generator(approximant=DEFAULT_APPROXIMANT, masses=MASSES)
+noise_template_generator()
