@@ -103,6 +103,14 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-data/
+no_inj_data/
+no_inj_data_gwf/
 *.gwf
 *.hdf5
+.DS_Store
+*.DS_Store
+*.npy
+*.pyc
+S18GW_CNN/
+.vscode/
+Files/convolution.csv
