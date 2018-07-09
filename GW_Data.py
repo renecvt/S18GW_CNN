@@ -25,6 +25,7 @@ def read_files():
     h1_ts = []
     l1_ts = []
 
+
     files = ['L-L1_LOSC_4_V1-1126109184-4096.gwf', 'H-H1_LOSC_4_V1-1126109184-4096.gwf']
 
     for f in files:

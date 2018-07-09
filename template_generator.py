@@ -76,6 +76,7 @@ def template_generator(approximant, masses):
     file.close()
 
 
+
 def noise_template_generator():
     h1_arr, l1_arr = GW_Data.read_files()
     directory = create_folder('Files', 'convolution.csv')
@@ -87,6 +88,7 @@ def noise_template_generator():
         h1_strain = h1_arr[i]
         l1_strain = l1_arr[i]
         for template in templates:
+
             t = list(template)
             t = TimeSeries(t, DELTA_T, epoch=l1_strain._epoch)
             t = t/10
