@@ -113,3 +113,4 @@ no_inj_data_gwf/
 *.pyc
 S18GW_CNN/
 .vscode/
+Files/convolution.csv
