@@ -3,7 +3,7 @@ import os
 from os.path import abspath, dirname
 
 import pylab
-from pycbc.filter import highpass, resample_to_delta_t
+from pycbc.filter import highpass, resample_to_delta_t, sigma
 from pycbc.types import TimeSeries
 from pycbc.waveform import get_td_waveform
 
@@ -75,8 +75,6 @@ def template_generator(approximant, masses):
         counter += 1
     file.close()
 
-
-
 def noise_template_generator():
     h1_arr, l1_arr = GW_Data.read_files()
     directory = create_folder('Files', 'convolution.csv')
@@ -102,8 +100,13 @@ def noise_template_generator():
             pylab.ylabel('Signal H1')
             pylab.xlabel('Time (s)')
 
-            h1 = numpy.nan_to_num(list(h1))
-            l1 = numpy.nan_to_num(list(l1))
+            h1_mean = numpy.nanmean(h1)
+            h1 = numpy.array(h1)
+            h1[numpy.isnan(h1)] = h1_mean
+
+            l1_mean = numpy.nanmean(l1)
+            l1 = numpy.array(l1)
+            l1[numpy.isnan(l1)] = l1_mean
 
             h1 = TimeSeries(h1, DELTA_T, epoch=h1_strain._epoch)
             l1 = TimeSeries(l1, DELTA_T, epoch=l1_strain._epoch)
