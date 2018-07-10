@@ -3,7 +3,7 @@ import os
 from os.path import abspath, dirname
 
 import pylab
-from pycbc.filter import highpass, resample_to_delta_t
+from pycbc.filter import highpass, resample_to_delta_t, sigma
 from pycbc.types import TimeSeries
 from pycbc.waveform import get_td_waveform
 
@@ -73,7 +73,7 @@ def template_generator(approximant, masses):
         file.write("%r\n" % highest_moved_axis_plus_polarization)
         counter += 1
     file.close()
-
+    
 def noise_template_generator():
     DIRNAME = dirname(dirname(abspath(__file__)))
     h1, l1 = GW_Data.read_files()
@@ -95,11 +95,25 @@ def noise_template_generator():
             h1 = h1_strain + t
             l1 = l1_strain + t
 
-            h1 = " ".join(str(hs) for hs in h1)
-            l1 = " ".join(str(ls) for ls in l1)
+            hs = " ".join(str(h) for h in h1)
+            ls = " ".join(str(l) for l in l1)
+
+            h1 = list(h1)
+            l1 = list(l1)
+
+            h1_mean = numpy.nanmean(h1)
+            h1 = numpy.array(h1)
+            h1[numpy.isnan(h1)] = h1_mean
+
+            l1_mean = numpy.nanmean(l1)
+            l1 = numpy.array(l1)
+            l1[numpy.isnan(l1)] = l1_mean
+
+            h1 = TimeSeries(h1, DELTA_T, epoch=h1_strain._epoch)
+            l1 = TimeSeries(l1, DELTA_T, epoch=l1_strain._epoch)
             
-            file.write("%r\n" % h1)
-            file.write("%r\n" % l1)
+            file.write("%r\n" % hs)
+            file.write("%r\n" % ls)
         file.close()
 
 
