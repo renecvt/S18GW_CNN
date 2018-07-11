@@ -18,7 +18,7 @@ from Tools.Tools import (cut_zero_values, get_bigger_value, move_ts_axis,
 DIRNAME = dirname(dirname(abspath(__file__)))
 DEFAULT_APPROXIMANT = 'SEOBNRv3_opt'
 MASSES = masses_generator()
-TSEGMENT = 1
+TSEGMENT = 1.4
 DELTA_T = 1.0 / 4096
 F_LOWER = 20
 LOWEST_TIME_CROP = .200
