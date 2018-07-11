@@ -66,7 +66,7 @@ def resize_ts(ts, time):
     if duration == time:
         return ts
     elif duration > time:
-        duration = duration - 1
+        duration = duration - time
         ts = ts.crop(left = duration, right = 0)
         return ts
     else:
