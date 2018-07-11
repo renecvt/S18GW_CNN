@@ -1,3 +1,5 @@
+# coding=utf-8
+
 import csv
 import os
 from os.path import abspath, dirname
@@ -77,7 +79,7 @@ def template_generator(approximant, masses):
 
 def noise_template_generator():
     h1_arr, l1_arr = GW_Data.read_files()
-    directory = create_folder('Files', 'convolution.csv')
+    # directory = create_folder('Files', 'convolution.csv')
     # file = open(directory, 'at')
     templates = genfromtxt('%s/S18GW_CNN/Files/dataset.csv' %
                            DIRNAME, delimiter=' ')
@@ -85,80 +87,69 @@ def noise_template_generator():
     for i in range(len(h1_arr)):
         h1_strain = h1_arr[i]
         l1_strain = l1_arr[i]
-        for template in templates:
 
+        for template in templates:
             t = list(template)
             t = TimeSeries(t, DELTA_T, epoch=l1_strain._epoch)
             t = t/10
 
+            from pycbc.filter import highpass_fir, lowpass_fir
+
+            pylab.subplot(3, 1, 1)
+            pylab.plot(t.sample_times, t)
+
+            t = highpass_fir(t, 40, 40)
+            pylab.subplot(3, 1, 2)
+            pylab.plot(t.sample_times, t)
+
+            t = lowpass_fir(t, 40, 40)
+            pylab.subplot(3, 1, 3)
+            pylab.plot(t.sample_times, t)
+
+            pylab.show()
+
             h1 = h1_strain + t
             l1 = l1_strain + t
 
+            for i, ifo in enumerate([h1, l1]):
+                strain = h1_strain if i == 0 else l1_strain
+                # ifo_whiten = ifo.whiten(1, 1, remove_corrupted=False)
+                p = 1 if i == 0 else 2
+                # label = 'H1' if i == 0 else 'L1'
 
-            pylab.subplot(4, 1, 1)
-            pylab.plot(h1.sample_times, h1)
-            pylab.ylabel('Signal H1')
-            pylab.xlabel('Time (s)')
+                pylab.subplot(5, 2, p)
+                pylab.plot(strain.sample_times, strain)
+                pylab.gca().axes.get_xaxis().set_visible(False)
+                pylab.gca().axes.get_yaxis().set_visible(False)
+                # pylab.ylabel('Signal %s' % label)
+                # pylab.xlabel('Time (s)')
 
-            h1_mean = numpy.nanmean(h1)
-            h1 = numpy.array(h1)
-            h1[numpy.isnan(h1)] = h1_mean
+                p += 2
+                pylab.subplot(5, 2, p)
+                pylab.plot(t.sample_times, t)
+                pylab.gca().axes.get_xaxis().set_visible(False)
+                pylab.gca().axes.get_yaxis().set_visible(False)
 
-            l1_mean = numpy.nanmean(l1)
-            l1 = numpy.array(l1)
-            l1[numpy.isnan(l1)] = l1_mean
+                p += 2
+                pylab.subplot(5, 2, p)
+                pylab.plot(ifo.sample_times, ifo)
+                pylab.gca().axes.get_xaxis().set_visible(False)
+                pylab.gca().axes.get_yaxis().set_visible(False)
 
-            h1 = TimeSeries(h1, DELTA_T, epoch=h1_strain._epoch)
-            l1 = TimeSeries(l1, DELTA_T, epoch=l1_strain._epoch)
-
-            pylab.subplot(4, 1, 2)
-            pylab.plot(h1.sample_times, h1)
-            pylab.ylabel('Signal H1')
-            pylab.xlabel('Time (s)')
-
-            h1 = h1.whiten(1,1, remove_corrupted=False)
-
-            pylab.subplot(4, 1, 3)
-            pylab.plot(h1.sample_times, h1)
-            pylab.ylabel('Signal H1')
-            pylab.xlabel('Time (s)')
-
-            t, f, p = h1.qtransform(.001, logfsteps=100,
+                times, f, qplane = ifo.qtransform(.001, logfsteps=100,
                                                   qrange=(8, 8),
                                                   frange=(20, 512))
 
-            peak = abs(h1).numpy().argmax()
-            time = h1.sample_times[peak]
-            print time
+                p += 2
+                pylab.subplot(5, 2, p)
+                pylab.pcolormesh(times, f, qplane**0.5, vmin=1, vmax=6)
+                pylab.yscale('log')
+                pylab.gca().axes.get_xaxis().set_visible(False)
+                pylab.gca().axes.get_yaxis().set_visible(False)
+                # pylab.xlabel('Time (s)')
+                # pylab.ylabel('Frequency (Hz)')
 
-            pylab.subplot(4, 1, 4)
-            pylab.pcolormesh(t, f, p**0.5, vmin=1, vmax=6)
-            pylab.yscale('log')
-            pylab.xlabel('H1 Time (s)')
-            pylab.ylabel('Frequency (Hz)')
             pylab.show()
-
-            # l1 = l1.whiten(1,1, remove_corrupted=False)
-
-            # pylab.subplot(2, 1, 1)
-            # pylab.plot(l1.sample_times, l1)
-            # pylab.ylabel('Signal L1')
-            # pylab.xlabel('Time (s)')
-
-
-
-            # t, f, p = l1.qtransform(.001, logfsteps=100,
-            #                                       qrange=(8, 8),
-            #                                       frange=(20, 512))
-
-
-            # pylab.subplot(2, 1, 2)
-            # pylab.pcolormesh(t, f, p**0.5, vmin=1, vmax=6)
-            # pylab.yscale('log')
-            # pylab.xlabel('L1 Time (s)')
-            # pylab.ylabel('Frequency (Hz)')
-            # pylab.show()
-
 
             # h1_f = " ".join(str(hs) for hs in h1)
             # l1_f = " ".join(str(ls) for ls in l1)
@@ -166,21 +157,15 @@ def noise_template_generator():
             # file.write("%r\n" % h1_f)
             # file.write("%r\n" % l1_f)
 
-            # pylab.subplot(2, 1, 1)
-            # pylab.plot(h1.sample_times, h1)
-            # pylab.ylabel('Signal H1')
-            # pylab.xlabel('Time (s)')
-
-            # pylab.subplot(2, 1, 2)
-            # pylab.plot(l1.sample_times, l1)
-            # pylab.ylabel('Signal L1')
-            # pylab.xlabel('Time (s)')
-
-            # pylab.show()
-
-            # pylab.close()
     # file.close()
 
 
 # template_generator(approximant = DEFAULT_APPROXIMANT, masses = MASSES)
 noise_template_generator()
+
+
+# Enventanado
+# Diferentes distancias
+# Congreso Nacional de Físcia
+# Imágenes 16 x 32
+# Conjunto de datos de entrenamiento, conjunto de validación
