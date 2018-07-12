@@ -1,18 +1,17 @@
 # coding=utf-8
-
 import csv
 import os
 from os.path import abspath, dirname
 
+import numpy
 import pylab
+from numpy import genfromtxt
 from pycbc.filter import highpass, resample_to_delta_t, sigma
 from pycbc.types import TimeSeries
 from pycbc.waveform import get_td_waveform
 
 import GW_Data
-import numpy
 import Tools
-from numpy import genfromtxt
 from Tools.masses_generator import masses_generator
 from Tools.Tools import (cut_zero_values, get_bigger_value, move_ts_axis,
                          resize_ts)
