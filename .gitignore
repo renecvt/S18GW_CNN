@@ -116,3 +116,4 @@ S18GW_CNN/
 Files/convolution.csv
 CNN/training_data
 CNN/testing_data
+CNN/model
