@@ -80,13 +80,3 @@ def move_ts_axis(ts, time_crop, duration):
         ts.append_zeros(1)
     return ts
 
-
-
-
-        
-
-
-
-
-
-    

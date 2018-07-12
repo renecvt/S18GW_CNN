@@ -89,6 +89,8 @@ def noise_template_generator():
 
         for template in templates:
             t = list(template)
+            t[0] = 0
+            t[len(t) - 1] = 0
             t = TimeSeries(t, DELTA_T, epoch=l1_strain._epoch)
             t = t/10
 
@@ -109,6 +111,9 @@ def noise_template_generator():
 
             h1 = h1_strain + t
             l1 = l1_strain + t
+
+            # h1 = h1.crop(0.2, 0.2)
+            # l1 = l1.crop(0.2, 0.2)
 
             for i, ifo in enumerate([h1, l1]):
                 strain = h1_strain if i == 0 else l1_strain
@@ -135,16 +140,20 @@ def noise_template_generator():
                 pylab.gca().axes.get_xaxis().set_visible(False)
                 pylab.gca().axes.get_yaxis().set_visible(False)
 
+                # ifo = ifo.crop(0.4, 0.4)
                 times, f, qplane = ifo.qtransform(.001, logfsteps=100,
                                                   qrange=(8, 8),
-                                                  frange=(20, 512))
+                                                  frange=(20, 512),
+                                                  mismatch=0.4)
 
                 p += 2
                 pylab.subplot(5, 2, p)
                 pylab.pcolormesh(times, f, qplane**0.5, vmin=1, vmax=6)
                 pylab.yscale('log')
-                pylab.gca().axes.get_xaxis().set_visible(False)
-                pylab.gca().axes.get_yaxis().set_visible(False)
+                xlim = pylab.xlim()
+                pylab.xlim(xmin=xlim[0]+0.07, xmax=xlim[1]-0.07)
+                pylab.gca().axes.get_xaxis()#.set_visible(False)
+                pylab.gca().axes.get_yaxis()#.set_visible(False)
                 # pylab.xlabel('Time (s)')
                 # pylab.ylabel('Frequency (Hz)')
 
