@@ -124,9 +124,35 @@ def noise_template_generator():
 
     # file.close()
 
+def noise_generator():
+    h1_arr, l1_arr = GW_Data.read_files()
+    flag = 0
+    for index in range(len(h1_arr)):
+        h1_noise = h1_arr[index]
+        l1_noise = l1_arr[index]
+        if flag == 179:
+            break
+        for i, ifo in enumerate([h1_noise, l1_noise]):
+            strain = 'H1_noise' if i == 0 else 'L1_noise'
+            times, f, qplane = ifo.qtransform(.001, logfsteps=100,qrange=(8, 8),frange=(20, 512),mismatch=0.4)
+            pylab.figure(figsize=(33, 17), frameon=False)
+            ax = pylab.figure().add_axes([0, 0, 1, 1])
+            ax.axis('off')
+            pylab.pcolormesh(times, f, qplane**0.5, vmin=1, vmax=6)
+            pylab.yscale('log')
+            xlim = pylab.xlim()
+            pylab.xlim(xmin=xlim[0]+0.07, xmax=xlim[1]-0.07)
+            pylab.gca().axes.get_xaxis().set_visible(False)
+            pylab.gca().axes.get_yaxis().set_visible(False)
+            pylab.savefig('{}/S18GW_CNN/Files/noise/Strain_{}_{}.png'.format(DIRNAME, strain,index), transparent=True)
+            pylab.close()
+            
+        
+                
 
+noise_generator()
 # template_generator(approximant = DEFAULT_APPROXIMANT, masses = MASSES)
-noise_template_generator()
+#noise_template_generator()
 
 
 # Enventanado
