@@ -7,7 +7,13 @@ const dirname = path.join(__dirname, '../');
 const gwNoiseFolder = 'qtransform';
 const gwRdFolder = 'qtransform_rd';
 
-const paths = [ { mainPath:`${dirname}${gwNoiseFolder}`, rdPath:`${dirname}${gwRdFolder}` } ];
+const justNoiseFolder = 'noise';
+const justNoiseRdFolder = 'noise_rd';
+
+const paths = [ 
+  { mainPath:`${dirname}${gwNoiseFolder}`, rdPath:`${dirname}${gwRdFolder}` }, 
+  { mainPath:`${dirname}${justNoiseFolder}`, rdPath:`${dirname}${justNoiseRdFolder}` } 
+];
 
 const pairs = {};
 for (const path of paths) {
