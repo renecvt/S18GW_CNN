@@ -78,83 +78,49 @@ def template_generator(approximant, masses):
 
 def noise_template_generator():
     h1_arr, l1_arr = GW_Data.read_files()
-    # directory = create_folder('Files', 'convolution.csv')
-    # file = open(directory, 'at')
     templates = genfromtxt('%s/S18GW_CNN/Files/dataset.csv' %
                            DIRNAME, delimiter=' ')
-
+    flag = 0
     for i in range(len(h1_arr)):
         h1_strain = h1_arr[i]
         l1_strain = l1_arr[i]
-
-        for template in templates:
+        if flag == 179:
+            break
+        for n, template in enumerate(templates):
             t = list(template)
+            t[0] = 0
+            t[len(t) - 1] = 0
             t = TimeSeries(t, DELTA_T, epoch=l1_strain._epoch)
             t = t/10
 
             from pycbc.filter import highpass_fir, lowpass_fir
 
-            pylab.subplot(3, 1, 1)
-            pylab.plot(t.sample_times, t)
-
             t = highpass_fir(t, 40, 40)
-            pylab.subplot(3, 1, 2)
-            pylab.plot(t.sample_times, t)
 
             t = lowpass_fir(t, 40, 40)
-            pylab.subplot(3, 1, 3)
-            pylab.plot(t.sample_times, t)
-
-            pylab.show()
 
             h1 = h1_strain + t
             l1 = l1_strain + t
 
             for i, ifo in enumerate([h1, l1]):
-                strain = h1_strain if i == 0 else l1_strain
-                # ifo_whiten = ifo.whiten(1, 1, remove_corrupted=False)
-                p = 1 if i == 0 else 2
-                # label = 'H1' if i == 0 else 'L1'
-
-                pylab.subplot(5, 2, p)
-                pylab.plot(strain.sample_times, strain)
-                pylab.gca().axes.get_xaxis().set_visible(False)
-                pylab.gca().axes.get_yaxis().set_visible(False)
-                # pylab.ylabel('Signal %s' % label)
-                # pylab.xlabel('Time (s)')
-
-                p += 2
-                pylab.subplot(5, 2, p)
-                pylab.plot(t.sample_times, t)
-                pylab.gca().axes.get_xaxis().set_visible(False)
-                pylab.gca().axes.get_yaxis().set_visible(False)
-
-                p += 2
-                pylab.subplot(5, 2, p)
-                pylab.plot(ifo.sample_times, ifo)
-                pylab.gca().axes.get_xaxis().set_visible(False)
-                pylab.gca().axes.get_yaxis().set_visible(False)
-
+                strain = 'H1' if i == 0 else 'L1'
                 times, f, qplane = ifo.qtransform(.001, logfsteps=100,
                                                   qrange=(8, 8),
-                                                  frange=(20, 512))
+                                                  frange=(20, 512),
+                                                  mismatch=0.4)
 
-                p += 2
-                pylab.subplot(5, 2, p)
+                pylab.figure(figsize=(33, 17), frameon=False)
+                ax = pylab.figure().add_axes([0, 0, 1, 1])
+                ax.axis('off')
                 pylab.pcolormesh(times, f, qplane**0.5, vmin=1, vmax=6)
                 pylab.yscale('log')
+                xlim = pylab.xlim()
+                pylab.xlim(xmin=xlim[0]+0.07, xmax=xlim[1]-0.07)
                 pylab.gca().axes.get_xaxis().set_visible(False)
                 pylab.gca().axes.get_yaxis().set_visible(False)
-                # pylab.xlabel('Time (s)')
-                # pylab.ylabel('Frequency (Hz)')
-
-            pylab.show()
-
-            # h1_f = " ".join(str(hs) for hs in h1)
-            # l1_f = " ".join(str(ls) for ls in l1)
-
-            # file.write("%r\n" % h1_f)
-            # file.write("%r\n" % l1_f)
+                pylab.savefig('{}/S18GW_CNN/Files/qtransform/Strain_{}_Template_{}.png'.format(DIRNAME, strain, n), transparent=True)
+                pylab.close()
+                flag = n
 
     # file.close()
 
