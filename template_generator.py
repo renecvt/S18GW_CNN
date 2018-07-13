@@ -144,7 +144,7 @@ def noise_generator():
             pylab.xlim(xmin=xlim[0]+0.07, xmax=xlim[1]-0.07)
             pylab.gca().axes.get_xaxis().set_visible(False)
             pylab.gca().axes.get_yaxis().set_visible(False)
-            pylab.savefig('{}/S18GW_CNN/Files/noise/Strain_{}_{}.png'.format(DIRNAME, strain,index), transparent=True)
+            pylab.savefig('{}/S18GW_CNN/Files/noise/Strain_{}_{}.png'.format(DIRNAME, strain, index), transparent=True)
             pylab.close()
             
         
