@@ -1,19 +1,25 @@
+# coding=utf-8
 import csv
 import os
 from os.path import abspath, dirname
 
 import numpy
 import pylab
+from numpy import genfromtxt
+from pycbc.filter import highpass, resample_to_delta_t, sigma
+from pycbc.types import TimeSeries
 from pycbc.waveform import get_td_waveform
 
+import GW_Data
 import Tools
-
 from Tools.masses_generator import masses_generator
-from Tools.Tools import get_bigger_value, cut_zero_values, resize_ts, move_ts_axis
+from Tools.Tools import (cut_zero_values, get_bigger_value, move_ts_axis,
+                         resize_ts)
 
+DIRNAME = dirname(dirname(abspath(__file__)))
 DEFAULT_APPROXIMANT = 'SEOBNRv3_opt'
 MASSES = masses_generator()
-TSEGMENT = 1
+TSEGMENT = 1.4
 DELTA_T = 1.0 / 4096
 F_LOWER = 20
 LOWEST_TIME_CROP = .200
@@ -44,22 +50,113 @@ def template_generator(approximant, masses):
     directory = create_folder('Files', 'dataset.csv')
     file = open(directory, 'at')
     for mass in masses:
-        plus_polarization, _ = get_td_waveform(approximant = approximant, mass1 = mass[0], mass2 = mass[1], delta_t = DELTA_T, f_lower = F_LOWER)
-        cut_plus_polarization = cut_zero_values(ts = plus_polarization)
-        resized_plus_polarization = resize_ts(ts = cut_plus_polarization, time = TSEGMENT)
-        lowest_moved_axis_plus_polarization = move_ts_axis(ts = resized_plus_polarization, time_crop = LOWEST_TIME_CROP, duration = TSEGMENT)
-        normal_moved_axis_plus_polarization = move_ts_axis(ts = resized_plus_polarization, time_crop = NORMAL_TIME_CROP, duration = TSEGMENT)
-        highest_moved_axis_plus_polarization = move_ts_axis(ts = resized_plus_polarization, time_crop = HIGHEST_TIME_CROP, duration = TSEGMENT)
-        resized_plus_polarization = " ".join(str(pl) for pl in resized_plus_polarization)
-        lowest_moved_axis_plus_polarization = " ".join(str(pl) for pl in lowest_moved_axis_plus_polarization)
-        normal_moved_axis_plus_polarization = " ".join(str(pl) for pl in normal_moved_axis_plus_polarization)
-        highest_moved_axis_plus_polarization = " ".join(str(pl) for pl in highest_moved_axis_plus_polarization)
+        plus_polarization, _ = get_td_waveform(
+            approximant=approximant, mass1=mass[0], mass2=mass[1], delta_t=DELTA_T, f_lower=F_LOWER)
+        cut_plus_polarization = cut_zero_values(ts=plus_polarization)
+        resized_plus_polarization = resize_ts(
+            ts=cut_plus_polarization, time=TSEGMENT)
+        lowest_moved_axis_plus_polarization = move_ts_axis(
+            ts=resized_plus_polarization, time_crop=LOWEST_TIME_CROP, duration=TSEGMENT)
+        normal_moved_axis_plus_polarization = move_ts_axis(
+            ts=resized_plus_polarization, time_crop=NORMAL_TIME_CROP, duration=TSEGMENT)
+        highest_moved_axis_plus_polarization = move_ts_axis(
+            ts=resized_plus_polarization, time_crop=HIGHEST_TIME_CROP, duration=TSEGMENT)
+        resized_plus_polarization = " ".join(
+            str(pl) for pl in resized_plus_polarization)
+        lowest_moved_axis_plus_polarization = " ".join(
+            str(pl) for pl in lowest_moved_axis_plus_polarization)
+        normal_moved_axis_plus_polarization = " ".join(
+            str(pl) for pl in normal_moved_axis_plus_polarization)
+        highest_moved_axis_plus_polarization = " ".join(
+            str(pl) for pl in highest_moved_axis_plus_polarization)
         file.write("%r\n" % resized_plus_polarization)
         file.write("%r\n" % lowest_moved_axis_plus_polarization)
         file.write("%r\n" % normal_moved_axis_plus_polarization)
         file.write("%r\n" % highest_moved_axis_plus_polarization)
-        counter += 1    
+        counter += 1
     file.close()
 
+def noise_template_generator():
+    h1_arr, l1_arr = GW_Data.read_files()
+    templates = genfromtxt('%s/S18GW_CNN/Files/dataset.csv' %
+                           DIRNAME, delimiter=' ')
+    flag = 0
+    for i in range(len(h1_arr)):
+        h1_strain = h1_arr[i]
+        l1_strain = l1_arr[i]
+        if flag == 179:
+            break
+        for n, template in enumerate(templates):
+            t = list(template)
+            t[0] = 0
+            t[len(t) - 1] = 0
+            t = TimeSeries(t, DELTA_T, epoch=l1_strain._epoch)
+            t = t/10
 
-template_generator(approximant = DEFAULT_APPROXIMANT, masses = MASSES)
+            from pycbc.filter import highpass_fir, lowpass_fir
+
+            t = highpass_fir(t, 40, 40)
+
+            t = lowpass_fir(t, 40, 40)
+
+            h1 = h1_strain + t
+            l1 = l1_strain + t
+
+            for i, ifo in enumerate([h1, l1]):
+                strain = 'H1' if i == 0 else 'L1'
+                times, f, qplane = ifo.qtransform(.001, logfsteps=100,
+                                                  qrange=(8, 8),
+                                                  frange=(20, 512),
+                                                  mismatch=0.4)
+
+                pylab.figure(figsize=(33, 17), frameon=False)
+                ax = pylab.figure().add_axes([0, 0, 1, 1])
+                ax.axis('off')
+                pylab.pcolormesh(times, f, qplane**0.5, vmin=1, vmax=6)
+                pylab.yscale('log')
+                xlim = pylab.xlim()
+                pylab.xlim(xmin=xlim[0]+0.07, xmax=xlim[1]-0.07)
+                pylab.gca().axes.get_xaxis().set_visible(False)
+                pylab.gca().axes.get_yaxis().set_visible(False)
+                pylab.savefig('{}/S18GW_CNN/Files/qtransform/Strain_{}_Template_{}.png'.format(DIRNAME, strain, n), transparent=True)
+                pylab.close()
+                flag = n
+
+    # file.close()
+
+def noise_generator():
+    h1_arr, l1_arr = GW_Data.read_files()
+    flag = 0
+    for index in range(len(h1_arr)):
+        h1_noise = h1_arr[index]
+        l1_noise = l1_arr[index]
+        if flag == 179:
+            break
+        for i, ifo in enumerate([h1_noise, l1_noise]):
+            strain = 'H1_noise' if i == 0 else 'L1_noise'
+            times, f, qplane = ifo.qtransform(.001, logfsteps=100,qrange=(8, 8),frange=(20, 512),mismatch=0.4)
+            pylab.figure(figsize=(33, 17), frameon=False)
+            ax = pylab.figure().add_axes([0, 0, 1, 1])
+            ax.axis('off')
+            pylab.pcolormesh(times, f, qplane**0.5, vmin=1, vmax=6)
+            pylab.yscale('log')
+            xlim = pylab.xlim()
+            pylab.xlim(xmin=xlim[0]+0.07, xmax=xlim[1]-0.07)
+            pylab.gca().axes.get_xaxis().set_visible(False)
+            pylab.gca().axes.get_yaxis().set_visible(False)
+            pylab.savefig('{}/S18GW_CNN/Files/noise/Strain_{}_{}.png'.format(DIRNAME, strain, index), transparent=True)
+            pylab.close()
+            
+        
+                
+
+noise_generator()
+# template_generator(approximant = DEFAULT_APPROXIMANT, masses = MASSES)
+#noise_template_generator()
+
+
+# Enventanado
+# Diferentes distancias
+# Congreso Nacional de Físcia
+# Imágenes 16 x 32
+# Conjunto de datos de entrenamiento, conjunto de validación

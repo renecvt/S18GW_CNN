@@ -24,6 +24,7 @@ wheels/
 .installed.cfg
 *.egg
 MANIFEST
+node_modules/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -111,3 +112,6 @@ no_inj_data_gwf/
 *.DS_Store
 *.npy
 *.pyc
+S18GW_CNN/
+.vscode/
+Files/convolution.csv
