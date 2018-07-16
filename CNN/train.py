@@ -7,7 +7,7 @@ from datetime import timedelta
 import numpy as np
 import tensorflow as tf
 
-import dataset
+import GW_dataset as dataset
 
 batch_size = 20
 
@@ -23,7 +23,7 @@ img_height = 16
 num_channels = 3
 train_path = 'CNN/training_data'
 
-# We shall load all the training and validation images and labels into memory using openCV and use that during training
+# Load all the training and validation images and labels into memory using openCV and use that during training
 data = dataset.read_train_sets(
     train_path, img_width, img_height, classes, validation_size=validation_size)
 
@@ -93,8 +93,6 @@ def create_convolutional_layer(input,
 
 
 def create_flatten_layer(layer):
-    # We know that the shape of the layer will be [batch_size img_size img_size num_channels]
-    # But let's get it from the previous layer.
     layer_shape = layer.get_shape()
 
     # Number of features will be img_height * img_width* num_channels. But we shall calculate it in place of hard-coding it.
