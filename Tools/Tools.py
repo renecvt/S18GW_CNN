@@ -66,7 +66,7 @@ def resize_ts(ts, time):
     if duration == time:
         return ts
     elif duration > time:
-        duration = duration - 1
+        duration = duration - time
         ts = ts.crop(left = duration, right = 0)
         return ts
     else:
@@ -80,13 +80,3 @@ def move_ts_axis(ts, time_crop, duration):
         ts.append_zeros(1)
     return ts
 
-
-
-
-        
-
-
-
-
-
-    
