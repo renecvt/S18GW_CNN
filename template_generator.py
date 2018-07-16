@@ -146,9 +146,9 @@ def noise_generator():
             pylab.gca().axes.get_yaxis().set_visible(False)
             pylab.savefig('{}/S18GW_CNN/Files/noise/Strain_{}_{}.png'.format(DIRNAME, strain, index), transparent=True)
             pylab.close()
-            
-        
-                
+
+
+
 
 noise_generator()
 # template_generator(approximant = DEFAULT_APPROXIMANT, masses = MASSES)
