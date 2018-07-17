@@ -88,10 +88,12 @@ async function createRdFolders() {
   const gwDirs = fs.readdirSync(GW_ABSOLUTE_PATH);
   const noiseDirs = fs.readdirSync(NOISE_ABSOLUTE_PATH);
   for (const dir of gwDirs) {
-    fs.mkdirSync(`${RD_GW_ABSOLUTE_PATH}/${dir}`);
+    const exists = fs.existsSync(`${RD_GW_ABSOLUTE_PATH}/${dir}`);
+    if (!exists) fs.mkdirSync(`${RD_GW_ABSOLUTE_PATH}/${dir}`);
   }
   for (const dir of noiseDirs) {
-    fs.mkdirSync(`${RD_NOISE_ABSOLUTE_PATH}/${dir}`);
+    const exists = fs.existsSync(`${RD_NOISE_ABSOLUTE_PATH}/${dir}`);
+    if (!exists) fs.mkdirSync(`${RD_NOISE_ABSOLUTE_PATH}/${dir}`);
   }
 }
 
@@ -107,6 +109,7 @@ async function redimensionFiles() {
         .toFile(`${RD_GW_ABSOLUTE_PATH}/${dir}/RD_${path}`); 
     }
   }
+
   for (const dir of noiseDirs) {
     const imagePaths = fs.readdirSync(`${NOISE_ABSOLUTE_PATH}/${dir}`);
     for (const path of imagePaths) {
