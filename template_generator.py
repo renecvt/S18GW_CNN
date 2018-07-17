@@ -118,7 +118,10 @@ def noise_template_generator():
                 pylab.xlim(xmin=xlim[0]+0.07, xmax=xlim[1]-0.07)
                 pylab.gca().axes.get_xaxis().set_visible(False)
                 pylab.gca().axes.get_yaxis().set_visible(False)
-                pylab.savefig('{}/S18GW_CNN/Files/qtransform/Strain_{}_Template_{}.png'.format(DIRNAME, strain, n), transparent=True)
+                directory = '{}/S18GW_CNN/Files/qtransform/{}'.format(DIRNAME, n)
+                if not os.path.exists(directory):
+                    os.makedirs(directory)
+                pylab.savefig('{}/S18GW_CNN/Files/qtransform/{}/Strain_{}_Template_{}.png'.format(DIRNAME, n, strain, n), transparent=True)
                 pylab.close()
                 flag = n
 
@@ -144,7 +147,10 @@ def noise_generator():
             pylab.xlim(xmin=xlim[0]+0.07, xmax=xlim[1]-0.07)
             pylab.gca().axes.get_xaxis().set_visible(False)
             pylab.gca().axes.get_yaxis().set_visible(False)
-            pylab.savefig('{}/S18GW_CNN/Files/noise/Strain_{}_{}.png'.format(DIRNAME, strain, index), transparent=True)
+            directory = '{}/S18GW_CNN/Files/noise/{}'.format(DIRNAME, index)
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+            pylab.savefig('{}/S18GW_CNN/Files/noise/{}/Strain_{}_{}.png'.format(DIRNAME, index, strain, index), transparent=True)
             pylab.close()
 
 
@@ -152,7 +158,7 @@ def noise_generator():
 
 noise_generator()
 # template_generator(approximant = DEFAULT_APPROXIMANT, masses = MASSES)
-#noise_template_generator()
+noise_template_generator()
 
 
 # Enventanado
