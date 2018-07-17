@@ -88,7 +88,7 @@ async function createRdFolders() {
   const gwDirs = fs.readdirSync(GW_ABSOLUTE_PATH);
   const noiseDirs = fs.readdirSync(NOISE_ABSOLUTE_PATH);
   for (const dir of gwDirs) {
-    fs.mkdirSync(`${RD_NOISE_ABSOLUTE_PATH}/${dir}`);
+    fs.mkdirSync(`${RD_GW_ABSOLUTE_PATH}/${dir}`);
   }
   for (const dir of noiseDirs) {
     fs.mkdirSync(`${RD_NOISE_ABSOLUTE_PATH}/${dir}`);
@@ -98,19 +98,26 @@ async function createRdFolders() {
 async function redimensionFiles() {
   const gwDirs = fs.readdirSync(GW_ABSOLUTE_PATH);
   const noiseDirs = fs.readdirSync(NOISE_ABSOLUTE_PATH);
-
-  
-  for (const iterator of object) {
-    
+  for (const dir of gwDirs) {
+    const imagePaths = fs.readdirSync(`${GW_ABSOLUTE_PATH}/${dir}`);
+    for (const path of imagePaths) {
+      await sharp(`${GW_ABSOLUTE_PATH}/${dir}/${path}`)
+        .resize(32, 16, { kernel: sharp.kernel.nearest })
+        .ignoreAspectRatio()
+        .toFile(`${RD_GW_ABSOLUTE_PATH}/${dir}/RD_${path}`); 
+    }
   }
-  for (const iterator of object) {
-    
+  for (const dir of noiseDirs) {
+    const imagePaths = fs.readdirSync(`${NOISE_ABSOLUTE_PATH}/${dir}`);
+    for (const path of imagePaths) {
+      await sharp(`${NOISE_ABSOLUTE_PATH}/${dir}/${path}`)
+        .resize(32, 16, { kernel: sharp.kernel.nearest })
+        .ignoreAspectRatio()
+        .toFile(`${RD_NOISE_ABSOLUTE_PATH}/${dir}/RD_${path}`); 
+    }
   }
 }
-//     await sharp(pairs[key].mainPath)
-//           .resize(32, 16, { kernel: sharp.kernel.nearest })
-//           .ignoreAspectRatio()
-//           .toFile(pairs[key].rdPath);
+
 (async () => {
   await checkAndCreateRdPaths();
   await checkOriginalImagePaths();
