@@ -79,4 +79,11 @@ def move_ts_axis(ts, time_crop, duration):
     while ts.duration < duration:
         ts.append_zeros(1)
     return ts
-
+def windowing(ts):
+    window = np.hanning(len(ts))
+    max = np.argmax(window)
+    for i in range(max, len(window)):
+        window[i] = 1
+    return TimeSeries(window, delta_t = 1.0 / 4096)
+    
+    
