@@ -152,7 +152,7 @@ def noise_generator():
 
 
 
-noise_generator()
+#noise_generator()
 # template_generator(approximant = DEFAULT_APPROXIMANT, masses = MASSES)
 noise_template_generator()
 
