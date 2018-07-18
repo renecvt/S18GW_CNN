@@ -1,3 +1,4 @@
+# pylint: disable-all
 import argparse
 import glob
 import os
@@ -16,17 +17,21 @@ def predict(h1, l1):
     image_height = 16
     num_channels = 3
     images = []
-    # Reading the image using OpenCV
-    image = cv2.imread(h1)
-    # Resizing the image to our desired size and preprocessing will be done exactly as done during training
-    image = cv2.resize(image, (image_width, image_height), 0, 0, cv2.INTER_LINEAR)
-    images.append(image)
+    ifos_images = []
+
+    for f in [h1, l1]:
+        image = cv2.imread(f)
+        image = cv2.resize(image, (image_width, image_height), 0, 0, cv2.INTER_LINEAR)
+        # image = cv2.adaptiveThreshold(image,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,11,2)
+        image = image.astype(np.float32)
+        image = np.multiply(image, 1.0/255.0)
+        ifos_images.append(image)
+
+    images.append(ifos_images[0] + ifos_images[1])
     images = np.array(images, dtype=np.uint8)
     images = images.astype('float32')
     images = np.multiply(images, 1.0/255.0)
-    # The input to the network is of shape [None image_size image_size num_channels]. Hence we reshape.
     x_batch = images.reshape(1,  image_height, image_width, num_channels)
-
     # Let us restore the saved model
     sess = tf.Session()
     # Step-1: Recreate the network graph. At this step only graph is created.
