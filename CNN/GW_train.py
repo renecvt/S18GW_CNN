@@ -202,4 +202,4 @@ def train(num_iteration):
     total_iterations += num_iteration
 
 
-train(num_iteration=500)
+train(num_iteration=50000)
