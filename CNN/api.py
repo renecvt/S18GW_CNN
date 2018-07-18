@@ -14,8 +14,9 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config["DEBUG"] = True
 
 def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    ext = '.' in filename and \
+           filename.rsplit('.', 1)[1].lower()
+    return ext, ext in ALLOWED_EXTENSIONS
 
 @app.route('/uploadFile', methods=['POST'])
 def upload_file():
@@ -27,7 +28,11 @@ def upload_file():
 
     if h1_file.filename == '' or l1_file.filename == '':
         return create_response({'result': False, 'message': 'File missing'}, 422)
-    if h1_file and l1_file and allowed_file(h1_file.filename) and allowed_file(l1_file.filename):
+
+    h1_ext, h1res = allowed_file(h1_file.filename)
+    l1_ext, l1res = allowed_file(l1_file.filename)
+
+    if h1_file and l1_file and h1res and l1res:
         h1_filename = secure_filename(h1_file.filename)
         l1_filename = secure_filename(l1_file.filename)
         h1 = os.path.join(app.config['UPLOAD_FOLDER'], h1_filename)
@@ -35,8 +40,11 @@ def upload_file():
         h1_file.save(h1)
         l1_file.save(l1)
         # img = b64encode((open(img, "rb").read()))
-        result = predict(h1, l1)
-        return create_response({'result': True, 'prediction': result}, 200)
+        if h1_ext == 'png' and l1_ext == 'png':
+            result = predict(h1, l1)
+            return create_response({'result': True, 'prediction': result}, 200)
+
+        return create_response({'result': False, 'message': 'Images format must be png'}, 422)
 
     return create_response({'result': False, 'message': 'No allowed file'}, 422)
 
