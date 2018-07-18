@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 from flask import send_file
 from GW_predict import predict
 
-UPLOAD_FOLDER = 'Files'
+UPLOAD_FOLDER = 'CNN/Files'
 ALLOWED_EXTENSIONS = set(['txt', 'csv', 'png', 'jpg', 'jpeg'])
 
 app = Flask(__name__)
