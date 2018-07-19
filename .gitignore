@@ -115,6 +115,3 @@ no_inj_data_gwf/
 S18GW_CNN/
 .vscode/
 Files/convolution.csv
-CNN/training_data
-CNN/testing_data
-CNN/model
