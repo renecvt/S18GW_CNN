@@ -1,0 +1,12 @@
+version: "2.2"
+services:
+  api:
+    container_name: "pyserver"
+    build: .
+    volumes:
+      - ".:/usr/src/app"
+    environment:
+      FLASK_APP: server.py
+    ports:
+      - "1333:1333"
+    command: ["flask", "run", "--host=0.0.0.0", "--port=1333"]
