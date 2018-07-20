@@ -1,0 +1,10 @@
+FROM python:2.7.15-jessie
+RUN mkdir -p usr/src/app
+COPY . usr/src/app
+WORKDIR usr/src/app
+RUN which python
+RUN apt-get update && apt-get install -y
+RUN pip install flask flask_uploads Werkzeug opencv-python numpy tensorflow
+ENV PORT 5000
+EXPOSE 5000
+CMD ["flask", "run"]

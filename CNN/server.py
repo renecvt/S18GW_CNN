@@ -1,9 +1,8 @@
 import os
 from base64 import b64encode, b64decode
-from flask import Flask, redirect, request, url_for, json
+from flask import Flask, redirect, request, url_for, json, send_file
 from flask_uploads import UploadSet, configure_uploads
 from werkzeug.utils import secure_filename
-from flask import send_file
 from GW_predict import predict
 
 UPLOAD_FOLDER = 'CNN/Files'
@@ -17,6 +16,10 @@ def allowed_file(filename):
     ext = '.' in filename and \
            filename.rsplit('.', 1)[1].lower()
     return ext, ext in ALLOWED_EXTENSIONS
+
+@app.route('/status', methods=['GET'])
+def status():
+    return create_response({ 'online': True, 'message': 'UP AND RUNNING @ 5000' }, 200)
 
 @app.route('/uploadFile', methods=['POST'])
 def upload_file():
@@ -56,4 +59,5 @@ def create_response(message, status):
     )
     return response
 
-app.run()
+if __name__ == '__main__':
+    app.run()
