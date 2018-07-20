@@ -5,6 +5,4 @@ WORKDIR usr/src/app
 RUN which python
 RUN apt-get update && apt-get install -y
 RUN pip install flask flask_uploads Werkzeug opencv-python numpy tensorflow
-ENV PORT 5000
-EXPOSE 5000
-CMD ["flask", "run"]
+CMD ["flask", "run", "--host=0.0.0.0"]
