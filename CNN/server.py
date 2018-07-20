@@ -19,7 +19,7 @@ def allowed_file(filename):
 
 @app.route('/status', methods=['GET'])
 def status():
-    return create_response({ 'online': True, 'message': 'UP AND RUNNING @ 5000' }, 200)
+    return create_response({ 'online': True, 'message': 'UP AND RUNNING @ 1333' }, 200)
 
 @app.route('/uploadFile', methods=['POST'])
 def upload_file():
@@ -60,4 +60,4 @@ def create_response(message, status):
     return response
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port='5000')
+    app.run(host='0.0.0.0', port='1333')

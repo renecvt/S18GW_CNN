@@ -8,5 +8,5 @@ services:
     environment:
       FLASK_APP: server.py
     ports:
-      - "5000:5000"
-    command: ["flask", "run", "--host=0.0.0.0"]
+      - "1333:1333"
+    command: ["flask", "run", "--host=0.0.0.0", "--port=1333"]
