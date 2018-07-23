@@ -35,9 +35,9 @@ def predict(h1, l1):
     # Let us restore the saved model
     sess = tf.Session()
     # Step-1: Recreate the network graph. At this step only graph is created.
-    saver = tf.train.import_meta_graph('CNN/model/GW-Noise-model.meta')
+    saver = tf.train.import_meta_graph('model/GW-Noise-model.meta')
     # Step-2: Now let's load the weights saved using the restore method.
-    saver.restore(sess, tf.train.latest_checkpoint('CNN/model/'))
+    saver.restore(sess, tf.train.latest_checkpoint('model/'))
 
     # Accessing the default graph which we have restored
     graph = tf.get_default_graph()
@@ -60,4 +60,6 @@ def predict(h1, l1):
     # result is of this format [probabiliy_of_rose probability_of_sunflower]
     print(result)
     classes = ['GW', 'Noise']
-    return classes[np.argmax(result)]
+    print classes[np.argmax(result)]
+predict(h1='/Users/victormorfinarredondo/Desktop/S18GW_CNN/CNN/training_data/Noise/179/RD_Strain_H1_noise_179.png',l1='/Users/victormorfinarredondo/Desktop/S18GW_CNN/CNN/training_data/Noise/179/RD_Strain_L1_noise_179.png')
+predict(h1='/Users/victormorfinarredondo/Desktop/S18GW_CNN/CNN/training_data/GW/15/RD_Strain_H1_Template_15.png',l1='/Users/victormorfinarredondo/Desktop/S18GW_CNN/CNN/training_data/GW/15/RD_Strain_L1_Template_15.png')
