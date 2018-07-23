@@ -24,12 +24,11 @@ def load_train(train_path, image_width, image_height, classes):
             ifos_images = []
             for fl in files:
                 image = cv2.imread(fl)
+                image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                 image = cv2.resize(
                     image, (image_width, image_height), 0, 0, cv2.INTER_LINEAR)
-                image = image.astype(np.float32)
-                image = np.multiply(image, 1.0 / 255.0)
                 ifos_images.append(image)
-            images.append(ifos_images[0] + ifos_images[1])
+            images.append([ifos_images[0], ifos_images[1]])
             label = np.zeros(len(classes))
             label[index] = 1.0
             labels.append(label)

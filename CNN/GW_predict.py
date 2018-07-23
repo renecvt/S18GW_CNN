@@ -15,23 +15,19 @@ def predict(h1, l1):
     # filename = dir_path + '/' + image_path
     image_width = 32
     image_height = 16
-    num_channels = 3
+    num_channels = 2
     images = []
     ifos_images = []
 
     for f in [h1, l1]:
         image = cv2.imread(f)
         image = cv2.resize(image, (image_width, image_height), 0, 0, cv2.INTER_LINEAR)
-        # image = cv2.adaptiveThreshold(image,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,11,2)
-        image = image.astype(np.float32)
-        image = np.multiply(image, 1.0/255.0)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         ifos_images.append(image)
 
-    images.append(ifos_images[0] + ifos_images[1])
-    images = np.array(images, dtype=np.uint8)
-    images = images.astype('float32')
-    images = np.multiply(images, 1.0/255.0)
-    x_batch = images.reshape(1,  image_height, image_width, num_channels)
+    images.append([ifos_images[0], ifos_images[1]])
+
+    x_batch = images
     # Let us restore the saved model
     sess = tf.Session()
     # Step-1: Recreate the network graph. At this step only graph is created.
@@ -59,5 +55,14 @@ def predict(h1, l1):
     result = sess.run(y_pred, feed_dict=feed_dict_testing)
     # result is of this format [probabiliy_of_rose probability_of_sunflower]
     print(result)
-    classes = ['GW', 'Noise']
+    classes = ['Noise', 'GW']
+
     return classes[np.argmax(result)]
+
+H1 = "/Users/karenggv/Desktop/CNN/training_data/GW/11/RD_Strain_H1_Template_11.png"
+L1 = "/Users/karenggv/Desktop/CNN/training_data/GW/11/RD_Strain_L1_Template_11.png"
+predict(H1, L1)
+
+H1 = "/Users/karenggv/Desktop/CNN/training_data/Noise/8/RD_Strain_H1_noise_8.png"
+L1 = "/Users/karenggv/Desktop/CNN/training_data/Noise/8/RD_Strain_L1_noise_8.png"
+predict(H1, L1)
