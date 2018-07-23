@@ -13,7 +13,7 @@ batch_size = 20
 
 # Prepare input data
 classes = [name for name in os.listdir(
-    'CNN/training_data') if not name.startswith(".")]
+    'training_data') if not name.startswith(".")]
 num_classes = len(classes)
 
 # 20% of the data will automatically be used for validation
@@ -21,7 +21,7 @@ validation_size = 0.2
 img_width = 32
 img_height = 16
 num_channels = 3
-train_path = 'CNN/training_data'
+train_path = 'training_data'
 
 # Load all the training and validation images and labels into memory using openCV and use that during training
 data = dataset.read_train_sets(
@@ -43,15 +43,15 @@ y_true_cls = tf.argmax(y_true, dimension=1)
 
 # Network graph params
 filter_size_conv1 = 3
-num_filters_conv1 = 32
+num_filters_conv1 = 17
 
 filter_size_conv2 = 3
-num_filters_conv2 = 32
+num_filters_conv2 = 17
 
 filter_size_conv3 = 3
-num_filters_conv3 = 64
+num_filters_conv3 = 34
 
-fc_layer_size = 128
+fc_layer_size = 68
 
 
 def create_weights(shape):
@@ -197,9 +197,9 @@ def train(num_iteration):
             epoch = int(i / int(data.train.num_examples/batch_size))
 
             show_progress(epoch, feed_dict_tr, feed_dict_val, val_loss)
-            saver.save(session, 'CNN/model/GW-Noise-model')
+            saver.save(session, 'model/GW-Noise-model')
 
     total_iterations += num_iteration
 
 
-train(num_iteration=50000)
+train(num_iteration=15000)
