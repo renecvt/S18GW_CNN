@@ -119,3 +119,5 @@ CNN/tensorboard
 training_data
 *.png
 CNN/training_data/
+CNN/training_data/Noise/*
+CNN/training_data/GW/*
