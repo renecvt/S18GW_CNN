@@ -116,6 +116,6 @@ S18GW_CNN/
 .vscode/
 Files/convolution.csv
 CNN/tensorboard
-CNN/training_data
 training_data
 *.png
+CNN/training_data/
