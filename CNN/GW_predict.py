@@ -58,6 +58,7 @@ def predict(h1, l1):
     feed_dict_testing = {x: x_batch}
     result = sess.run(y_pred, feed_dict=feed_dict_testing)
     # result is of this format [probabiliy_of_rose probability_of_sunflower]
-    print(result)
     classes = ['GW', 'Noise']
-    return classes[np.argmax(result)]
+    prediction = classes[np.argmax(result)]
+    prediction = True if prediction is 'GW' else False
+    return { 'prediction': prediction, 'complete_result': result.flatten().tolist() }

@@ -23,33 +23,28 @@ def status():
 
 @app.route('/uploadFile', methods=['POST'])
 def upload_file():
-    if 'h1' not in request.files or 'l1' not in request.files:
+    
+    # Getting a dictionary out of the JSON request
+    json_request = request.get_json()
+
+    # Verifying if the keys needed are present in request
+    h1 = json_request['h1'] if 'h1' in json_request else None
+    l1 = json_request['l1'] if 'l1' in json_request else None
+
+    # Returning error if keys needed are not part of the request
+    if h1 is None or l1 is None:
         return create_response({'result': False, 'message': 'File missing'}, 422)
 
-    h1_file = request.files['h1']
-    l1_file = request.files['l1']
+    # Getting the extension name of the file uploaded
+    h1_ext, _ = allowed_file(h1)
+    l1_ext, _ = allowed_file(l1)
 
-    if h1_file.filename == '' or l1_file.filename == '':
-        return create_response({'result': False, 'message': 'File missing'}, 422)
-
-    h1_ext, h1res = allowed_file(h1_file.filename)
-    l1_ext, l1res = allowed_file(l1_file.filename)
-
-    if h1_file and l1_file and h1res and l1res:
-        h1_filename = secure_filename(h1_file.filename)
-        l1_filename = secure_filename(l1_file.filename)
-        h1 = os.path.join(app.config['UPLOAD_FOLDER'], h1_filename)
-        l1 = os.path.join(app.config['UPLOAD_FOLDER'], l1_filename)
-        h1_file.save(h1)
-        l1_file.save(l1)
-        # img = b64encode((open(img, "rb").read()))
-        if h1_ext == 'png' and l1_ext == 'png':
-            result = predict(h1, l1)
-            return create_response({'result': True, 'prediction': result}, 200)
-
-        return create_response({'result': False, 'message': 'Images format must be png'}, 422)
-
-    return create_response({'result': False, 'message': 'No allowed file'}, 422)
+    # Checking if the file extension is part of the allowed extensions
+    if h1_ext in ALLOWED_EXTENSIONS and l1_ext in ALLOWED_EXTENSIONS:
+        result = predict(h1, l1)
+        return create_response({'result': True, 'prediction': result}, 200)
+    else:
+        return create_response({'result': False, 'message': 'File not allowed'}, 422)
 
 def create_response(message, status):
     response = app.response_class(
