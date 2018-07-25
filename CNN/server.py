@@ -40,7 +40,7 @@ def upload_file():
         l1_file.save(l1)
         # img = b64encode((open(img, "rb").read()))
         result = prediction(h1, l1)
-        return create_response({'result': True, 'prediction': result}, 200)
+        return create_response({'result': True, 'prediction': result[0], 'noise': result[1], 'gw': result[2]}, 200)
 
     return create_response({'result': False, 'message': 'No allowed file'}, 422)
 
