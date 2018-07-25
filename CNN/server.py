@@ -1,6 +1,6 @@
 import os
 from base64 import b64encode, b64decode
-from flask import Flask, redirect, request, url_for, json
+from flask import Flask, redirect, request, url_for, json, send_file
 from flask_uploads import UploadSet, configure_uploads
 from werkzeug.utils import secure_filename
 from flask import send_file
@@ -16,6 +16,10 @@ app.config["DEBUG"] = True
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/status', methods=['GET'])
+def status():
+    return create_response({ 'online': True, 'message': 'UP AND RUNNING @ 1333' }, 200)
 
 @app.route('/uploadFile', methods=['POST'])
 def upload_file():
@@ -48,4 +52,5 @@ def create_response(message, status):
     )
     return response
 
-app.run()
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port='1333')
