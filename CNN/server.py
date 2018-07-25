@@ -3,7 +3,8 @@ from base64 import b64encode, b64decode
 from flask import Flask, redirect, request, url_for, json, send_file
 from flask_uploads import UploadSet, configure_uploads
 from werkzeug.utils import secure_filename
-from GW_predict import predict
+from flask import send_file
+from prediction import prediction
 
 UPLOAD_FOLDER = 'CNN/Files'
 ALLOWED_EXTENSIONS = set(['txt', 'csv', 'png', 'jpg', 'jpeg'])
@@ -13,9 +14,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config["DEBUG"] = True
 
 def allowed_file(filename):
-    ext = '.' in filename and \
-           filename.rsplit('.', 1)[1].lower()
-    return ext, ext in ALLOWED_EXTENSIONS
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/status', methods=['GET'])
 def status():
@@ -31,11 +31,7 @@ def upload_file():
 
     if h1_file.filename == '' or l1_file.filename == '':
         return create_response({'result': False, 'message': 'File missing'}, 422)
-
-    h1_ext, h1res = allowed_file(h1_file.filename)
-    l1_ext, l1res = allowed_file(l1_file.filename)
-
-    if h1_file and l1_file and h1res and l1res:
+    if h1_file and l1_file and allowed_file(h1_file.filename) and allowed_file(l1_file.filename):
         h1_filename = secure_filename(h1_file.filename)
         l1_filename = secure_filename(l1_file.filename)
         h1 = os.path.join(app.config['UPLOAD_FOLDER'], h1_filename)
@@ -43,11 +39,8 @@ def upload_file():
         h1_file.save(h1)
         l1_file.save(l1)
         # img = b64encode((open(img, "rb").read()))
-        if h1_ext == 'png' and l1_ext == 'png':
-            result = predict(h1, l1)
-            return create_response({'result': True, 'prediction': result}, 200)
-
-        return create_response({'result': False, 'message': 'Images format must be png'}, 422)
+        result = prediction(h1, l1)
+        return create_response({'result': True, 'prediction': result}, 200)
 
     return create_response({'result': False, 'message': 'No allowed file'}, 422)
 
