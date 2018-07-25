@@ -7,7 +7,7 @@ import tensorflow as tf
 from tools.DataSetGenerator import DataSetGenerator
 from tools.model import model
 
-dg = DataSetGenerator("./training_data")
+dg = DataSetGenerator("CNN/training_data")
 
 input_img, target_labels, model, prediction = model()
 
@@ -32,7 +32,7 @@ with tf.name_scope('accuracy') as scope:
 
 
 saver = tf.train.Saver()
-model_save_path = "./tensorboard/model/"
+model_save_path = "CNN/tensorboard/model/"
 model_name = 'model'
 
 def to_pred(probas):
@@ -47,7 +47,7 @@ def is_certain(probas, confidence):
 with tf.Session() as sess:
     summaryMerged = tf.summary.merge_all()
 
-    filename = "./tensorboard/summary_log/run" + \
+    filename = "CNN/tensorboard/summary_log/run" + \
         datetime.datetime.now().strftime("%Y-%m-%d--%H-%M-%s")
 
     tf.global_variables_initializer().run()

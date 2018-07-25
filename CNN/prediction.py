@@ -29,19 +29,21 @@ def prediction(H1, L1):
         input_img = graph.get_tensor_by_name("Input/input:0")
 
         feed_dict_testing = {input_img: [img]}
-        result = sess.run(y_pred, feed_dict=feed_dict_testing)
+        result = sess.run(y_pred, feed_dict=feed_dict_testing) [0]
         classes = ['Noise', 'GW']
 
-        print result[0]
-        print classes[np.argmax(result)]
+        print
+        print("Noise: {0}%  GW: {1}%".format(result[0]*100, result[1]*100))
+        print "Prediction: %s" % classes[np.argmax(result)]
+        return classes[np.argmax(result)]
 
 
 # GW
-H1 = "/Users/karenggv/Desktop/CNN/training_data/GW/11/RD_Strain_H1_Template_11.png"
-L1 = "/Users/karenggv/Desktop/CNN/training_data/GW/11/RD_Strain_L1_Template_11.png"
-prediction(H1, L1)
+# H1 = "/Users/karenggv/Desktop/Projects/Delfin/S18GW_CNN/CNN/training_data/GW/71/RD_Strain_H1_Template_71.png"
+# L1 = "/Users/karenggv/Desktop/Projects/Delfin/S18GW_CNN/CNN/training_data/GW/71/RD_Strain_L1_Template_71.png"
+# prediction(H1, L1)
 
 # Noise
-H1 = "/Users/karenggv/Desktop/CNN/training_data/Noise/8/RD_Strain_H1_noise_8.png"
-L1 = "/Users/karenggv/Desktop/CNN/training_data/Noise/8/RD_Strain_L1_noise_8.png"
-prediction(H1, L1)
+# H1 = "/Users/karenggv/Desktop/Projects/Delfin/S18GW_CNN/CNN/training_data/Noise/8/RD_Strain_H1_noise_8.png"
+# L1 = "/Users/karenggv/Desktop/Projects/Delfin/S18GW_CNN/CNN/training_data/Noise/8/RD_Strain_L1_noise_8.png"
+# prediction(H1, L1)
