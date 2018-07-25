@@ -35,7 +35,7 @@ def prediction(H1, L1):
         print
         print("Noise: {0}%  GW: {1}%".format(result[0]*100, result[1]*100))
         print "Prediction: %s" % classes[np.argmax(result)]
-        return classes[np.argmax(result)]
+        return classes[np.argmax(result)], str(result[0]), str(result[1])
 
 
 # GW
