@@ -121,3 +121,4 @@ training_data
 CNN/training_data/
 CNN/training_data/Noise/*
 CNN/training_data/GW/*
+CNN/tensorboard
