@@ -5,7 +5,7 @@ class NetworkBuilder:
     def __init__(self):
         pass
 
-    def attach_conv_layer(self, input_layer, output_size=32, feature_size=(5, 5), strides=[1, 1, 1, 1], padding='SAME',
+    def attach_conv_layer(self, input_layer, output_size=32, feature_size=(4, 4), strides=[1, 1, 1, 1], padding='SAME',
                           summary=False):
         with tf.name_scope("Convolution") as scope:
             input_size = input_layer.get_shape().as_list()[-1]
@@ -49,6 +49,6 @@ class NetworkBuilder:
             if summary:
                 tf.summary.histogram(weights.name, weights)
             biases = tf.Variable(tf.random_normal([size]), name='dense_biases')
-            drop_out = tf.nn.dropout(input_layer, 1)
-            dense = tf.matmul(drop_out, weights) + biases
+            # drop_out = tf.nn.dropout(input_layer, 1)
+            dense = tf.matmul(input_layer, weights) + biases
             return dense

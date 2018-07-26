@@ -5,13 +5,22 @@ from random import shuffle
 
 import cv2
 import numpy as np
+import imutils
 
 def read_and_convert(path, image_size=(16, 32)):
     img = cv2.imread(path)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    h, w = img.shape[:2]
     sh, sw = image_size
-    img = cv2.resize(img, (sw, sh), 0, 0, cv2.INTER_LINEAR)
 
+    aspect = w/h
+
+    if aspect < 1: # vertical image
+        new_img = imutils.rotate_bound(img, 90)
+    else:
+        new_img = img.copy()
+
+    img = cv2.resize(new_img, (sw, sh), 0, 0, cv2.INTER_LINEAR)
     return img
 
 class DataSetGenerator:
@@ -68,6 +77,7 @@ class DataSetGenerator:
                 img1 = read_and_convert(p[0])
                 img2 = read_and_convert(p[1])
                 arr = np.array([img1, img2])
+                arr = arr.reshape(16, 32, 2)
                 images.append(arr)
                 labels.append(label)
 
@@ -91,6 +101,7 @@ class DataSetGenerator:
                 img1 = read_and_convert(paths[i][counter][0])
                 img2 = read_and_convert(paths[i][counter][1])
                 arr = np.array([img1, img2])
+                arr = arr.reshape(16, 32, 2)
                 images.append(arr)
                 labels.append(label)
             counter += 1
