@@ -7,6 +7,7 @@ import time
 
 from tools.DataSetGenerator import DataSetGenerator
 from tools.model import model
+import pylab as plt
 
 dg = DataSetGenerator("CNN/training_data")
 
@@ -30,7 +31,9 @@ with tf.name_scope('accuracy') as scope:
     accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
 with tf.name_scope('auc') as scope:
-    auc_value, _ = tf.metrics.auc(tf.argmax(target_labels, 1), tf.argmax(prediction, 1), curve='ROC')
+    auc_value, update_op = tf.metrics.auc(tf.argmax(target_labels, 1), tf.argmax(prediction, 1), curve='ROC')
+    false_positives, u_f_p = tf.metrics.false_positives(tf.argmax(target_labels, 1), tf.argmax(prediction, 1))
+    true_negatives, u_t_n = tf.metrics.true_negatives(tf.argmax(target_labels, 1), tf.argmax(prediction, 1))
 
 saver = tf.train.Saver()
 model_save_path = "CNN/tensorboard/model/"
@@ -39,15 +42,15 @@ model_name = 'model'
 tf.summary.scalar('loss', cost)
 tf.summary.scalar('accuracy', accuracy)
 tf.summary.scalar('auc', auc_value)
+tf.summary.scalar('false_positives', false_positives)
+tf.summary.scalar('true_negatives', true_negatives)
+
 
 with tf.Session() as sess:
     summaryMerged = tf.summary.merge_all()
-
-    filename = "CNN/tensorboard/summary_log/run" + \
-        datetime.datetime.now().strftime("%Y-%m-%d--%H-%M-%s")
-
-    filename_val = "CNN/tensorboard/validation/run" + \
-        datetime.datetime.now().strftime("%Y-%m-%d--%H-%M-%s")
+    layer = "prueba4"
+    filename = "CNN/tensorboard/summary_log/" + layer
+    filename_val = "CNN/tensorboard/validation/" +layer
 
     tf.global_variables_initializer().run()
     tf.local_variables_initializer().run()
@@ -58,32 +61,41 @@ with tf.Session() as sess:
     writer = tf.summary.FileWriter(filename, sess.graph)
     writer1 = tf.summary.FileWriter(filename_val)
 
-    import pylab as plt
-
     for epoch in range(_EPOCHS):
         train_accuracy = 0
         count = 0
         start_time = time.time()
         batches = dg.get_mini_batches(_BATCH_SIZE, validation=False)
         for imgs, labels in batches:
-            error, sumOut, acu, steps, _, _= sess.run([cost, summaryMerged, accuracy, global_step, optimizer, auc_value],
+            error, sumOut, acu, steps, _, _, _, _= sess.run([cost, summaryMerged, accuracy, global_step, optimizer, update_op,  u_f_p,  u_t_n],
                                                     feed_dict={input_img: imgs, target_labels: labels})
+
             print("err=", error, "accuracy=", acu)
             train_accuracy += acu
             count += 1
             writer.add_summary(sumOut, steps)
             saver.save(sess, model_save_path+model_name)
 
+
+
+        a, f, t = sess.run([auc_value, false_positives, true_negatives])
+        print("Final (accumulated) AUC value):", a)
+        print("False positives:", f)
+        print("True negatives:", t)
+
         train_accuracy /= count
         imgs, labels = dg.get_validation_images()
-        summ, vali_accuracy, auc = sess.run([summaryMerged, accuracy, auc_value], feed_dict={input_img: imgs, target_labels: labels})
+        summ, vali_accuracy = sess.run([summaryMerged, accuracy], feed_dict={input_img: imgs, target_labels: labels})
         writer1.add_summary(summ, epoch)
 
         end_time = time.time()
+
 
         print("Epoch "+str(epoch+1)+" completed : Time usage "+str(int(end_time-start_time))+" seconds")
         print("\tAccuracy:")
         print ("\t- Training Accuracy:\t{}".format(train_accuracy))
         print ("\t- Validation Accuracy:\t{}".format(vali_accuracy))
+
+
 
 

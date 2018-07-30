@@ -23,18 +23,18 @@ def model():
     with tf.name_scope("ModelV2") as scope:
         model = input_img
 
-        model = nb.attach_conv_layer(model, 16, summary=True)
+        model = nb.attach_conv_layer(model, 32, summary=True)
         model = nb.attach_relu_layer(model)
         model = nb.attach_pooling_layer(model)
 
-        # model = nb.attach_conv_layer(model, 32, summary=True)
-        # model = nb.attach_relu_layer(model)
-        # model = nb.attach_pooling_layer(model)
+        model = nb.attach_conv_layer(model, 32, summary=True)
+        model = nb.attach_relu_layer(model)
+        model = nb.attach_pooling_layer(model)
         # print(model.get_shape())
 
-        # model = nb.attach_conv_layer(model, 32, summary=True)
-        # model = nb.attach_relu_layer(model)
-        # model = nb.attach_pooling_layer(model)
+        model = nb.attach_conv_layer(model, 32, summary=True)
+        model = nb.attach_relu_layer(model)
+        model = nb.attach_pooling_layer(model)
         # print(model.get_shape())
 
         model = nb.flatten(model)
