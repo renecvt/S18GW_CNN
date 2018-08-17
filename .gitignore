@@ -115,3 +115,12 @@ no_inj_data_gwf/
 S18GW_CNN/
 .vscode/
 Files/convolution.csv
+CNN/tensorboard
+training_data
+*.png
+CNN/training_data/
+CNN/training_data/Noise/*
+CNN/training_data/GW/*
+CNN/tensorboard/summary_log
+tensorboard
+*.local

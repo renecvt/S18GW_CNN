@@ -14,7 +14,7 @@ import GW_Data
 import Tools
 from Tools.masses_generator import masses_generator
 from Tools.Tools import (cut_zero_values, get_bigger_value, move_ts_axis,
-                         resize_ts)
+                         resize_ts, windowing)
 
 DIRNAME = dirname(dirname(abspath(__file__)))
 DEFAULT_APPROXIMANT = 'SEOBNRv3_opt'
@@ -53,8 +53,10 @@ def template_generator(approximant, masses):
         plus_polarization, _ = get_td_waveform(
             approximant=approximant, mass1=mass[0], mass2=mass[1], delta_t=DELTA_T, f_lower=F_LOWER)
         cut_plus_polarization = cut_zero_values(ts=plus_polarization)
+        window= windowing(cut_plus_polarization)
+        tem_plus_wind= cut_plus_polarization * window
         resized_plus_polarization = resize_ts(
-            ts=cut_plus_polarization, time=TSEGMENT)
+            ts=tem_plus_wind, time=TSEGMENT)
         lowest_moved_axis_plus_polarization = move_ts_axis(
             ts=resized_plus_polarization, time_crop=LOWEST_TIME_CROP, duration=TSEGMENT)
         normal_moved_axis_plus_polarization = move_ts_axis(
@@ -75,7 +77,7 @@ def template_generator(approximant, masses):
         file.write("%r\n" % highest_moved_axis_plus_polarization)
         counter += 1
     file.close()
-
+    pylab.close()
 def noise_template_generator():
     h1_arr, l1_arr = GW_Data.read_files()
     templates = genfromtxt('%s/S18GW_CNN/Files/dataset.csv' %
@@ -92,12 +94,6 @@ def noise_template_generator():
             t[len(t) - 1] = 0
             t = TimeSeries(t, DELTA_T, epoch=l1_strain._epoch)
             t = t/10
-
-            from pycbc.filter import highpass_fir, lowpass_fir
-
-            t = highpass_fir(t, 40, 40)
-
-            t = lowpass_fir(t, 40, 40)
 
             h1 = h1_strain + t
             l1 = l1_strain + t
@@ -118,7 +114,10 @@ def noise_template_generator():
                 pylab.xlim(xmin=xlim[0]+0.07, xmax=xlim[1]-0.07)
                 pylab.gca().axes.get_xaxis().set_visible(False)
                 pylab.gca().axes.get_yaxis().set_visible(False)
-                pylab.savefig('{}/S18GW_CNN/Files/qtransform/Strain_{}_Template_{}.png'.format(DIRNAME, strain, n), transparent=True)
+                directory = '{}/S18GW_CNN/Files/qtransform/{}'.format(DIRNAME, n)
+                if not os.path.exists(directory):
+                    os.makedirs(directory)
+                pylab.savefig('{}/S18GW_CNN/Files/qtransform/{}/Strain_{}_Template_{}.png'.format(DIRNAME, n, strain, n), transparent=True)
                 pylab.close()
                 flag = n
 
@@ -144,15 +143,18 @@ def noise_generator():
             pylab.xlim(xmin=xlim[0]+0.07, xmax=xlim[1]-0.07)
             pylab.gca().axes.get_xaxis().set_visible(False)
             pylab.gca().axes.get_yaxis().set_visible(False)
-            pylab.savefig('{}/S18GW_CNN/Files/noise/Strain_{}_{}.png'.format(DIRNAME, strain, index), transparent=True)
+            directory = '{}/S18GW_CNN/Files/noise/{}'.format(DIRNAME, index)
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+            pylab.savefig('{}/S18GW_CNN/Files/noise/{}/Strain_{}_{}.png'.format(DIRNAME, index, strain, index), transparent=True)
             pylab.close()
-            
-        
-                
 
-noise_generator()
+
+
+
+#noise_generator()
 # template_generator(approximant = DEFAULT_APPROXIMANT, masses = MASSES)
-#noise_template_generator()
+noise_template_generator()
 
 
 # Enventanado

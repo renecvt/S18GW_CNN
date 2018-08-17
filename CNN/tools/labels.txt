@@ -1,0 +1,6 @@
+(lp0
+S'Noise'
+p1
+aS'GW'
+p2
+a.
